@@ -50,7 +50,7 @@ public class AdminController : ControllerBase
                     Id = Guid.NewGuid(),
                     Slug = "haldi-mehendi",
                     Name = "Haldi & Mehendi",
-                    EventDate = new DateTime(2026, 8, 25),
+                    EventDate = new DateTime(2026, 8, 25, 0, 0, 0, DateTimeKind.Utc),
                     StartTime = "Evening",
                     VenueId = venue.Id,
                     DressCode = "Traditional - Yellow",

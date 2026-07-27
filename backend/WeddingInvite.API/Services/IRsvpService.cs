@@ -59,10 +59,17 @@ public class RsvpService : IRsvpService
             EditToken = editToken,
             EditTokenHash = editTokenHash,
             MessageToCouple = messageToCouple,
-            EventResponses = eventResponses,
             SubmittedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        // Add each event response separately to avoid tracking issues
+        foreach (var response in eventResponses)
+        {
+            response.Id = Guid.NewGuid();
+            response.UpdatedAt = DateTime.UtcNow;
+            rsvp.EventResponses.Add(response);
+        }
 
         _context.RsvpSubmissions.Add(rsvp);
         await _context.SaveChangesAsync();

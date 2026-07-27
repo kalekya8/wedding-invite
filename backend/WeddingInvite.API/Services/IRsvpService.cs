@@ -135,6 +135,7 @@ public class RsvpService : IRsvpService
             EventName = r.Event?.Name ?? "Unknown Event",
             AttendanceStatus = ((Models.AttendanceStatus)r.AttendanceStatus).ToString().ToLower(),
             FoodPreference = r.FoodPreference ?? "Not specified",
+            CreatedAt = r.UpdatedAt
         }).ToList();
     }
 

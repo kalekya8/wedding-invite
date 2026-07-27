@@ -29,13 +29,15 @@ public class RsvpsController : ControllerBase
 
         var eventResponses = request.EventResponses.ConvertAll(dto => new GuestEventResponse
         {
+            Id = Guid.NewGuid(),
             EventId = Guid.Parse(dto.EventId),
             InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
             GuestName = dto.GuestName,
             AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
             FoodPreference = dto.FoodPreference,
             DietaryRestrictions = dto.DietaryRestrictions,
-            SpecialRequests = dto.SpecialRequests
+            SpecialRequests = dto.SpecialRequests,
+            UpdatedAt = DateTime.UtcNow
         });
 
         var (success, editToken, message) = await _rsvpService.SubmitRsvpAsync(
@@ -62,13 +64,15 @@ public class RsvpsController : ControllerBase
     {
         var eventResponses = request.EventResponses.ConvertAll(dto => new GuestEventResponse
         {
+            Id = Guid.NewGuid(),
             EventId = Guid.Parse(dto.EventId),
             InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
             GuestName = dto.GuestName,
             AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
             FoodPreference = dto.FoodPreference,
             DietaryRestrictions = dto.DietaryRestrictions,
-            SpecialRequests = dto.SpecialRequests
+            SpecialRequests = dto.SpecialRequests,
+            UpdatedAt = DateTime.UtcNow
         });
 
         var (success, message) = await _rsvpService.UpdateRsvpAsync(

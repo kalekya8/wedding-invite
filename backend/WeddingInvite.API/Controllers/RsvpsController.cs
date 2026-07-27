@@ -27,25 +27,56 @@ public class RsvpsController : ControllerBase
         if (invitation == null)
             return NotFound(new { success = false, message = "Invitation not found." });
 
-        var eventResponses = request.EventResponses.ConvertAll(dto => new GuestEventResponse
+        try
         {
-            Id = Guid.NewGuid(),
-            EventId = Guid.Parse(dto.EventId),
-            InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
-            GuestName = dto.GuestName,
-            AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
-            FoodPreference = dto.FoodPreference,
-            DietaryRestrictions = dto.DietaryRestrictions,
-            SpecialRequests = dto.SpecialRequests,
-            UpdatedAt = DateTime.UtcNow
-        });
+            var eventResponses = new List<GuestEventResponse>();
 
-        var (success, editToken, message) = await _rsvpService.SubmitRsvpAsync(
-            invitation.Id,
-            eventResponses,
-            request.MessageToCouple);
+            foreach (var dto in request.EventResponses)
+            {
+                Guid eventId;
 
-        return Ok(new { success, editToken, message });
+                // Try to parse as GUID first, then try as integer display order
+                if (!Guid.TryParse(dto.EventId, out eventId))
+                {
+                    if (int.TryParse(dto.EventId, out int displayOrder))
+                    {
+                        // Find event by display order
+                        var evt = await _invitationService.GetEventByDisplayOrderAsync(displayOrder);
+                        if (evt == null)
+                            return BadRequest(new { success = false, message = $"Event with display order {displayOrder} not found." });
+                        eventId = evt.Id;
+                    }
+                    else
+                    {
+                        return BadRequest(new { success = false, message = $"Invalid event ID format: {dto.EventId}" });
+                    }
+                }
+
+                eventResponses.Add(new GuestEventResponse
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = eventId,
+                    InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
+                    GuestName = dto.GuestName,
+                    AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
+                    FoodPreference = dto.FoodPreference,
+                    DietaryRestrictions = dto.DietaryRestrictions,
+                    SpecialRequests = dto.SpecialRequests,
+                    UpdatedAt = DateTime.UtcNow
+                });
+            }
+
+            var (success, editToken, message) = await _rsvpService.SubmitRsvpAsync(
+                invitation.Id,
+                eventResponses,
+                request.MessageToCouple);
+
+            return Ok(new { success, editToken, message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { success = false, message = $"Error: {ex.Message}" });
+        }
     }
 
     [HttpGet("manage/{editToken}")]

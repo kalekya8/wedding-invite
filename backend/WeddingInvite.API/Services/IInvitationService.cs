@@ -10,6 +10,7 @@ public interface IInvitationService
     Task<Invitation?> CreateInvitationAsync(Invitation invitation, List<InvitedGuest> guests);
     Task<Invitation?> UpdateInvitationAsync(Invitation invitation);
     Task<bool> DeactivateInvitationAsync(Guid id);
+    Task<WeddingEvent?> GetEventByDisplayOrderAsync(int displayOrder);
 }
 
 public class InvitationService : IInvitationService
@@ -56,6 +57,12 @@ public class InvitationService : IInvitationService
         _context.Invitations.Update(invitation);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<WeddingEvent?> GetEventByDisplayOrderAsync(int displayOrder)
+    {
+        return await _context.Events
+            .FirstOrDefaultAsync(e => e.DisplayOrder == displayOrder && e.IsActive);
     }
 
     private static string GenerateInvitationCode()

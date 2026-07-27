@@ -133,4 +133,52 @@ public class AdminController : ControllerBase
             return StatusCode(500, new { success = false, message = $"Error: {message}" });
         }
     }
+
+    [HttpPost("create-invitation")]
+    public async Task<IActionResult> CreateInvitation([FromBody] CreateInvitationRequest request)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(request.InvitationCode) || string.IsNullOrWhiteSpace(request.HouseholdName))
+            {
+                return BadRequest(new { success = false, message = "InvitationCode and HouseholdName are required" });
+            }
+
+            // Check if invitation already exists
+            var existingInvitation = _dbContext.Invitations
+                .FirstOrDefault(i => i.InvitationCode == request.InvitationCode);
+
+            if (existingInvitation != null)
+            {
+                return BadRequest(new { success = false, message = "Invitation code already exists" });
+            }
+
+            var invitation = new Invitation
+            {
+                Id = Guid.NewGuid(),
+                InvitationCode = request.InvitationCode,
+                HouseholdName = request.HouseholdName,
+                PrimaryGuestName = request.PrimaryGuestName ?? "Guest",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _dbContext.Invitations.Add(invitation);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { success = true, message = $"Invitation '{request.InvitationCode}' created successfully", invitationId = invitation.Id });
+        }
+        catch (Exception ex)
+        {
+            var message = ex.InnerException?.Message ?? ex.Message;
+            return StatusCode(500, new { success = false, message = $"Error: {message}" });
+        }
+    }
+}
+
+public class CreateInvitationRequest
+{
+    public string InvitationCode { get; set; } = string.Empty;
+    public string HouseholdName { get; set; } = string.Empty;
+    public string? PrimaryGuestName { get; set; }
 }

@@ -579,9 +579,10 @@ export class RsvpComponent implements OnInit {
   private initializeEvents() {
     this.eventOptions = [
       { id: 'haldi', name: 'Haldi & Mehendi - 25 August', eventId: '1', selected: false },
-      { id: 'pellikuthuru', name: 'Pellikuthuru / Pellikoduku - 26 August', eventId: '2', selected: false },
-      { id: 'ceremony', name: 'Wedding Ceremony - 27 August', eventId: '3', selected: false },
-      { id: 'reception', name: 'Reception - 27 August', eventId: '4', selected: false }
+      { id: 'pellikuthuru', name: 'Pellikuthuru - 26 August', eventId: '2', selected: false },
+      { id: 'pellikoduku', name: 'Pellikoduku - 26 August', eventId: '3', selected: false },
+      { id: 'ceremony', name: 'Wedding Ceremony - 27 August', eventId: '4', selected: false },
+      { id: 'reception', name: 'Reception - 27 August', eventId: '5', selected: false }
     ];
   }
 

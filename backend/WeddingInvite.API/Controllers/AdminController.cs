@@ -20,17 +20,10 @@ public class AdminController : ControllerBase
     {
         try
         {
-            // Clear existing data if any
-            var existingEvents = _dbContext.Events.ToList();
-            var existingVenues = _dbContext.Venues.ToList();
-
-            if (existingEvents.Any())
-                _dbContext.Events.RemoveRange(existingEvents);
-            if (existingVenues.Any())
-                _dbContext.Venues.RemoveRange(existingVenues);
-
-            if (existingEvents.Any() || existingVenues.Any())
-                await _dbContext.SaveChangesAsync();
+            // Clear existing data using direct SQL to avoid cascade issues
+            await _dbContext.Database.ExecuteSqlRawAsync("DELETE FROM \"GuestEventResponses\"");
+            await _dbContext.Database.ExecuteSqlRawAsync("DELETE FROM \"Events\"");
+            await _dbContext.Database.ExecuteSqlRawAsync("DELETE FROM \"Venues\"");
 
             // Create venue
             var venue = new Venue
@@ -135,7 +128,8 @@ public class AdminController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { success = false, message = ex.Message });
+            var message = ex.InnerException?.Message ?? ex.Message;
+            return StatusCode(500, new { success = false, message = $"Error: {message}" });
         }
     }
 }

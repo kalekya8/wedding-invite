@@ -54,15 +54,13 @@ public class RsvpsController : ControllerBase
 
                 eventResponses.Add(new GuestEventResponse
                 {
-                    Id = Guid.NewGuid(),
                     EventId = eventId,
                     InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
                     GuestName = dto.GuestName,
                     AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
                     FoodPreference = dto.FoodPreference,
                     DietaryRestrictions = dto.DietaryRestrictions,
-                    SpecialRequests = dto.SpecialRequests,
-                    UpdatedAt = DateTime.UtcNow
+                    SpecialRequests = dto.SpecialRequests
                 });
             }
 

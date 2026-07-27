@@ -58,47 +58,11 @@ builder.Services.AddScoped<IVenueService, VenueService>();
 
 var app = builder.Build();
 
-// Apply migrations and seed data
+// Apply migrations
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<WeddingDbContext>();
     dbContext.Database.Migrate();
-
-    // Seed sample data if needed
-    if (!dbContext.Venues.Any())
-    {
-        var venue = new WeddingInvite.API.Models.Venue
-        {
-            Id = Guid.NewGuid(),
-            VenueName = "Sample Venue",
-            Address = "New Virginia, Iowa",
-            GoogleMapsUrl = "https://maps.google.com",
-            ParkingDetails = "Free parking available",
-            AccessibilityDetails = "Wheelchair accessible",
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-        dbContext.Venues.Add(venue);
-        dbContext.SaveChanges();
-
-        var weddingEvent = new WeddingInvite.API.Models.WeddingEvent
-        {
-            Id = Guid.NewGuid(),
-            Slug = "ceremony",
-            Name = "Wedding Ceremony",
-            EventDate = DateTime.UtcNow.AddDays(5),
-            StartTime = "10:00 AM",
-            VenueId = venue.Id,
-            DressCode = "Formal Attire",
-            Description = "Join us for the wedding ceremony",
-            DisplayOrder = 1,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-        dbContext.Events.Add(weddingEvent);
-        dbContext.SaveChanges();
-    }
 }
 
 // Configure the HTTP request pipeline.

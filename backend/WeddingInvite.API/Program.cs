@@ -22,7 +22,9 @@ if (connectionString.StartsWith("postgresql://"))
 {
     var uri = new Uri(connectionString);
     var userInfo = uri.UserInfo.Split(':');
-    connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.LocalPath.TrimStart('/')};User Id={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;TrustServerCertificate=false;";
+    var port = uri.Port > 0 ? uri.Port : 5432;
+    var database = uri.LocalPath.TrimStart('/').Split('?')[0];
+    connectionString = $"Server={uri.Host};Port={port};Database={database};User Id={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;TrustServerCertificate=false;";
 }
 
 builder.Services.AddDbContext<WeddingDbContext>(options =>

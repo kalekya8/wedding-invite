@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://wedding-invite-frontend.railway.internal/api'
+  apiUrl: 'https://triumphant-inspiration-production-e3e5.up.railway.app/api'
 };

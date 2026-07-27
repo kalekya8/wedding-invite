@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface GuestEventResponse {
   eventId: string;
@@ -22,7 +23,7 @@ export interface SubmitRsvpRequest {
   providedIn: 'root'
 })
 export class RsvpService {
-  private apiUrl = 'https://wedding-api.gentlecoast-4307174e.eastus.azurecontainerapps.io/api/rsvps';
+  private apiUrl = `${environment.apiUrl}/rsvps`;
 
   constructor(private http: HttpClient) {}
 

@@ -16,6 +16,15 @@ builder.Services.AddSwaggerGen();
 // Database
 var connectionString = builder.Configuration.GetConnectionString("WeddingDatabase")
     ?? throw new InvalidOperationException("Connection string 'WeddingDatabase' not found.");
+
+// Convert PostgreSQL URI format to connection string if needed
+if (connectionString.StartsWith("postgresql://"))
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    connectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.LocalPath.TrimStart('/')};User Id={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;TrustServerCertificate=false;";
+}
+
 builder.Services.AddDbContext<WeddingDbContext>(options =>
     options.UseNpgsql(connectionString));
 

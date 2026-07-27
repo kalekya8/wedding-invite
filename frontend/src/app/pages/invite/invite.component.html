@@ -1,0 +1,61 @@
+<div class="invite-wrapper" [@fadeIn]>
+  <!-- Hero Section -->
+  <section class="hero-section" [@slideUp]>
+    <div class="wedding-header-section">
+
+      <div class="couple-names" [@nameReveal]>
+        <h1 class="bride-name">Lohitha Kurapati</h1>
+        <p class="ampersand">&</p>
+        <h1 class="groom-name">Vivian Raj Kappala</h1>
+      </div>
+
+      <div class="wedding-details" [@fadeInDelay]>
+        <p class="wedding-date">27th August 2026</p>
+        <p class="wedding-time">11:07 AM</p>
+        <p class="wedding-venue">Harpers by Bailey Farms, Iowa</p>
+        <audio #audioPlayer [src]="'assets/music/wedding-music.mp3'"></audio>
+      </div>
+
+      <button class="music-btn-floating" (click)="toggleMusic()" [@fadeIn] title="Toggle Music">
+        {{ isPlaying ? '🔊' : '🔇' }}
+      </button>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="gold-divider" [@slideInWidth]></div>
+
+
+  <!-- Events Section -->
+  <section class="events-section" [@slideUp]>
+    <h2>Our Wedding Celebration</h2>
+    <div class="events-grid">
+      <div class="event-image-card" *ngFor="let event of events" [@cardSlideIn]>
+        <img [src]="event.image" [alt]="event.name" class="event-image">
+      </div>
+    </div>
+  </section>
+
+  <!-- Travel Section -->
+  <section class="travel-section" [@slideUp]>
+    <h2>Venue & Travel</h2>
+    <div class="venue-info">
+      <h3>Harpers by Bailey Farms</h3>
+      <p>3014 Scott St, New Virginia, IA 50210</p>
+      <p class="venue-description">
+        A beautiful venue nestled in the heart of Iowa countryside,
+        perfect for our celebration of love and commitment.
+      </p>
+    </div>
+  </section>
+
+  <!-- RSVP Component -->
+  <app-rsvp></app-rsvp>
+
+  <!-- Footer -->
+  <footer class="footer" [@fadeInDelay]>
+    <p>With love and gratitude,</p>
+    <p class="couple-signature">Lohitha & Vivian</p>
+    <p class="footer-date">27 August 2026</p>
+  </footer>
+</div>

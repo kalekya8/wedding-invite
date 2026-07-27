@@ -1,0 +1,37 @@
+# Backend
+bin/
+obj/
+*.dll
+*.exe
+*.so
+*.dylib
+*.db
+*.sqlite
+*.sqlite3
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.user
+*.suo
+
+# Environment
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+.env
+.env.local
+
+# Build
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+
+# NuGet
+packages/
+*.nupkg

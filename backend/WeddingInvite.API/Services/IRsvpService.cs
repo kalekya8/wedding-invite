@@ -63,15 +63,17 @@ public class RsvpService : IRsvpService
             UpdatedAt = DateTime.UtcNow
         };
 
-        // Add each event response separately to avoid tracking issues
+        _context.RsvpSubmissions.Add(rsvp);
+
+        // Add event responses after RSVP is added
         foreach (var response in eventResponses)
         {
             response.Id = Guid.NewGuid();
             response.UpdatedAt = DateTime.UtcNow;
-            rsvp.EventResponses.Add(response);
+            response.RsvpSubmission = rsvp;
+            _context.GuestEventResponses.Add(response);
         }
 
-        _context.RsvpSubmissions.Add(rsvp);
         await _context.SaveChangesAsync();
 
         return (true, editToken, "RSVP submitted successfully.");

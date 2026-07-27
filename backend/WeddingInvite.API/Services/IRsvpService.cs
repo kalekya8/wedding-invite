@@ -49,34 +49,41 @@ public class RsvpService : IRsvpService
         List<GuestEventResponse> eventResponses,
         string? messageToCouple = null)
     {
-        var editToken = GenerateSecureToken();
-        var editTokenHash = HashToken(editToken);
-
-        var rsvp = new RsvpSubmission
+        try
         {
-            Id = Guid.NewGuid(),
-            InvitationId = invitationId,
-            EditToken = editToken,
-            EditTokenHash = editTokenHash,
-            MessageToCouple = messageToCouple,
-            SubmittedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            var editToken = GenerateSecureToken();
+            var editTokenHash = HashToken(editToken);
 
-        _context.RsvpSubmissions.Add(rsvp);
+            var rsvp = new RsvpSubmission
+            {
+                Id = Guid.NewGuid(),
+                InvitationId = invitationId,
+                EditToken = editToken,
+                EditTokenHash = editTokenHash,
+                MessageToCouple = messageToCouple,
+                SubmittedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-        // Add event responses after RSVP is added
-        foreach (var response in eventResponses)
-        {
-            response.Id = Guid.NewGuid();
-            response.UpdatedAt = DateTime.UtcNow;
-            response.RsvpSubmission = rsvp;
-            _context.GuestEventResponses.Add(response);
+            _context.RsvpSubmissions.Add(rsvp);
+            await _context.SaveChangesAsync();
+
+            // Add event responses in a separate transaction after RSVP is saved
+            foreach (var response in eventResponses)
+            {
+                response.Id = Guid.NewGuid();
+                response.UpdatedAt = DateTime.UtcNow;
+                _context.GuestEventResponses.Add(response);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return (true, editToken, "RSVP submitted successfully.");
         }
-
-        await _context.SaveChangesAsync();
-
-        return (true, editToken, "RSVP submitted successfully.");
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error submitting RSVP: {ex.Message}", ex);
+        }
     }
 
     public async Task<(bool Success, RsvpSubmission? Rsvp, string Message)> GetRsvpByEditTokenAsync(string editToken)

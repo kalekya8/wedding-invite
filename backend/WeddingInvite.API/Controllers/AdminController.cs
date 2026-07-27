@@ -20,11 +20,17 @@ public class AdminController : ControllerBase
     {
         try
         {
-            // Check if data already exists
-            if (_dbContext.Venues.Any() || _dbContext.Events.Any())
-            {
-                return BadRequest(new { success = false, message = "Data already exists in database" });
-            }
+            // Clear existing data if any
+            var existingEvents = _dbContext.Events.ToList();
+            var existingVenues = _dbContext.Venues.ToList();
+
+            if (existingEvents.Any())
+                _dbContext.Events.RemoveRange(existingEvents);
+            if (existingVenues.Any())
+                _dbContext.Venues.RemoveRange(existingVenues);
+
+            if (existingEvents.Any() || existingVenues.Any())
+                await _dbContext.SaveChangesAsync();
 
             // Create venue
             var venue = new Venue

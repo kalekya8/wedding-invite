@@ -49,7 +49,7 @@ public class AdminController : ControllerBase
             await _dbContext.SaveChangesAsync();
 
             // Create events
-            var events = new List<WeddingEvent>
+            var events = new List<WeddingInvite.API.Models.WeddingEvent>
             {
                 new()
                 {

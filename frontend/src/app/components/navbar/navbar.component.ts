@@ -23,10 +23,9 @@ import { Subscription } from 'rxjs';
         <button class="audio-button"
                 (click)="toggleAudio()"
                 [class.muted]="isMuted$ | async"
-                title="Toggle background music"
+                [title]="(isMuted$ | async) ? 'Click to play music' : 'Click to mute music'"
                 [@fadeIn]>
-          <span class="audio-icon" *ngIf="!(isMuted$ | async)">♪</span>
-          <span class="audio-icon" *ngIf="isMuted$ | async">♪</span>
+          <span class="audio-icon">♪</span>
         </button>
       </div>
     </nav>
@@ -189,23 +188,38 @@ import { Subscription } from 'rxjs';
 export class NavbarComponent implements OnInit, OnDestroy {
   isMuted$ = this.audioService.isMuted;
   private subscriptions: Subscription[] = [];
+  private isMutedValue = false;
 
   constructor(private audioService: AudioService) {}
 
   ngOnInit() {
-    // Subscribe to auto-play when user first interacts with page
+    // Subscribe to muted state
+    const sub = this.isMuted$.subscribe(muted => {
+      this.isMutedValue = muted;
+    });
+    this.subscriptions.push(sub);
+
+    // Ensure audio plays on first user interaction
     const handleUserInteraction = () => {
-      // Try to play audio on user interaction if not muted
-      const savedMutedState = localStorage.getItem('wedding_audio_muted');
-      if (savedMutedState === null || savedMutedState === 'false') {
+      if (!this.isMutedValue) {
         this.audioService.play();
       }
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('scroll', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
     };
 
+    // Listen for user interaction to trigger audio playback
     document.addEventListener('click', handleUserInteraction);
     document.addEventListener('scroll', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+
+    // Try to play immediately (might work on some browsers)
+    setTimeout(() => {
+      if (!this.isMutedValue) {
+        this.audioService.play();
+      }
+    }, 1000);
   }
 
   ngOnDestroy() {

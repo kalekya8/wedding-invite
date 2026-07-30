@@ -6,8 +6,9 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AudioService {
   private audio: HTMLAudioElement | null = null;
-  private isMuted$ = new BehaviorSubject<boolean>(true);
+  private isMuted$ = new BehaviorSubject<boolean>(false);
   private isPlaying$ = new BehaviorSubject<boolean>(false);
+  private autoplayAttempted = false;
 
   isMuted = this.isMuted$.asObservable();
   isPlaying = this.isPlaying$.asObservable();
@@ -22,9 +23,11 @@ export class AudioService {
     this.audio = new Audio('/assets/audio/Radha Ramanam _ Tipparaa Meesam _ Anurag Kulkarni _ Nutana Mohan _ Sing Telugu.mp3');
     this.audio.volume = 0.5;
     this.audio.loop = true;
+    this.audio.crossOrigin = 'anonymous';
 
     this.audio.addEventListener('play', () => {
       this.isPlaying$.next(true);
+      this.isMuted$.next(false);
     });
 
     this.audio.addEventListener('pause', () => {
@@ -35,12 +38,38 @@ export class AudioService {
       this.isPlaying$.next(false);
     });
 
+    this.audio.addEventListener('error', (e) => {
+      console.error('Audio error:', e);
+    });
+
     // Restore muted state from localStorage if available
     const savedMutedState = localStorage.getItem('wedding_audio_muted');
     if (savedMutedState !== null) {
       const muted = JSON.parse(savedMutedState);
       this.isMuted$.next(muted);
+
+      // If not muted, try to play immediately
+      if (!muted) {
+        this.playAudioImmediately();
+      }
+    } else {
+      // Default: auto-play on first load
+      this.playAudioImmediately();
     }
+  }
+
+  private playAudioImmediately() {
+    if (!this.audio || this.autoplayAttempted) return;
+    this.autoplayAttempted = true;
+
+    setTimeout(() => {
+      if (this.audio) {
+        this.audio.play().catch(err => {
+          console.warn('Audio autoplay blocked by browser (user interaction required):', err.message);
+          // Browser blocked autoplay, we'll play on user interaction
+        });
+      }
+    }, 500);
   }
 
   toggleAudio() {

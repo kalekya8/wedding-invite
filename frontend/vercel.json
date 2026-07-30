@@ -3,5 +3,8 @@
   "outputDirectory": "dist/wedding-invite-frontend",
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { RsvpService } from '../../../services/rsvp.service';
+import { ConfettiService } from '../../../services/confetti.service';
 
 interface EventOption {
   id: string;
@@ -570,7 +571,7 @@ export class RsvpComponent implements OnInit {
   error = '';
   invitationCode = 'LV2026';
 
-  constructor(private rsvpService: RsvpService) {}
+  constructor(private rsvpService: RsvpService, private confettiService: ConfettiService) {}
 
   ngOnInit() {
     this.initializeEvents();
@@ -680,6 +681,13 @@ export class RsvpComponent implements OnInit {
         this.isSubmitting = false;
         this.submitted = true;
         console.log('RSVP submitted successfully');
+
+        // Trigger confetti burst from center of screen after a short delay
+        setTimeout(() => {
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
+          this.confettiService.burst(centerX, centerY, 3500);
+        }, 300);
       },
       error: (error: any) => {
         this.isSubmitting = false;

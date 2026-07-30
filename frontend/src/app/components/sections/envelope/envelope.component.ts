@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import gsap from 'gsap';
 import { COUPLE_DATA } from '../../../models/wedding.model';
+import { ConfettiService } from '../../../services/confetti.service';
 
 @Component({
   selector: 'app-envelope',
@@ -111,6 +112,8 @@ export class EnvelopeComponent implements OnInit {
   isOpened = signal(false);
   coupleData = COUPLE_DATA;
 
+  constructor(private confettiService: ConfettiService) {}
+
   ngOnInit() {
     if (this.sealRef) {
       setTimeout(() => {
@@ -128,26 +131,51 @@ export class EnvelopeComponent implements OnInit {
   openEnvelope() {
     if (this.isOpened()) return;
 
+    // Get seal center position for confetti burst
+    const sealElement = this.sealRef?.nativeElement;
+    const sealRect = sealElement.getBoundingClientRect();
+    const centerX = sealRect.left + sealRect.width / 2;
+    const centerY = sealRect.top + sealRect.height / 2;
+
     const timeline = gsap.timeline();
 
-    // Seal rises and rotates slightly
+    // Seal press inward (100ms)
+    timeline.to(this.sealRef?.nativeElement, {
+      duration: 0.1,
+      scale: 0.95,
+      ease: 'power2.in'
+    }, 0);
+
+    // Soft gold glow (200ms)
+    timeline.to(this.sealRef?.nativeElement, {
+      duration: 0.1,
+      boxShadow: '0 8px 35px rgba(200, 162, 74, 0.8), inset -2px -2px 5px rgba(0,0,0,0.2), inset 2px 2px 5px rgba(255,255,255,0.5)',
+      ease: 'power2.out'
+    }, 0.1);
+
+    // Confetti burst starts (250ms) - 50ms duration
+    setTimeout(() => {
+      this.confettiService.burst(centerX, centerY, 3000);
+    }, 250);
+
+    // Seal rises and rotates slightly (500ms)
     timeline.to(this.sealRef?.nativeElement, {
       duration: 0.6,
       y: -30,
       scale: 1.05,
       rotation: -8,
       ease: 'back.out(1.2)'
-    }, 0);
+    }, 0.1);
 
-    // Flap rotates open
+    // Flap rotates open (900ms)
     timeline.to(this.flapRef?.nativeElement, {
       duration: 0.8,
       rotateX: -145,
       transformOrigin: '50% 0%',
       ease: 'power2.out'
-    }, 0.1);
+    }, 0.4);
 
-    // After animation, show invitation
+    // After animation, show invitation (3000ms)
     setTimeout(() => {
       this.isOpened.set(true);
     }, 1000);

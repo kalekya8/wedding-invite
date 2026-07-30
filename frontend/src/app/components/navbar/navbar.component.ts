@@ -1,6 +1,8 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { AudioService } from '../../services/audio.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -17,6 +19,15 @@ import { trigger, transition, style, animate } from '@angular/animations';
           <li><a href="#travel" (click)="scrollTo('travel')">Travel</a></li>
           <li><a href="#rsvp" (click)="scrollTo('rsvp')">RSVP</a></li>
         </ul>
+
+        <button class="audio-button"
+                (click)="toggleAudio()"
+                [class.muted]="isMuted$ | async"
+                title="Toggle background music"
+                [@fadeIn]>
+          <span class="audio-icon" *ngIf="!(isMuted$ | async)">♪</span>
+          <span class="audio-icon" *ngIf="isMuted$ | async">♪</span>
+        </button>
       </div>
     </nav>
   `,
@@ -54,6 +65,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
       margin: 0;
       padding: 0;
       gap: 40px;
+      align-items: center;
 
       li {
         a {
@@ -87,6 +99,56 @@ import { trigger, transition, style, animate } from '@angular/animations';
       }
     }
 
+    .audio-button {
+      background: transparent;
+      border: 2px solid #d4af37;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+      min-width: 40px;
+
+      .audio-icon {
+        font-size: 20px;
+        color: #7a9d5d;
+        display: block;
+        line-height: 1;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      &:hover {
+        background: rgba(122, 157, 93, 0.1);
+        border-color: #7a9d5d;
+        transform: scale(1.1);
+      }
+
+      &.muted {
+        opacity: 0.6;
+
+        .audio-icon {
+          animation: none;
+        }
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+
     @media (max-width: 768px) {
       .navbar-content {
         padding: 15px 20px;
@@ -98,6 +160,15 @@ import { trigger, transition, style, animate } from '@angular/animations';
         gap: 20px;
         font-size: 12px;
       }
+
+      .audio-button {
+        width: 36px;
+        height: 36px;
+
+        .audio-icon {
+          font-size: 18px;
+        }
+      }
     }
   `],
   animations: [
@@ -106,10 +177,45 @@ import { trigger, transition, style, animate } from '@angular/animations';
         style({ transform: 'translateY(-100%)', opacity: 0 }),
         animate('600ms 400ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'translateY(0)', opacity: 1 }))
       ])
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms 400ms ease-in', style({ opacity: 1 }))
+      ])
     ])
   ]
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
+  isMuted$ = this.audioService.isMuted;
+  private subscriptions: Subscription[] = [];
+
+  constructor(private audioService: AudioService) {}
+
+  ngOnInit() {
+    // Subscribe to auto-play when user first interacts with page
+    const handleUserInteraction = () => {
+      // Try to play audio on user interaction if not muted
+      const savedMutedState = localStorage.getItem('wedding_audio_muted');
+      if (savedMutedState === null || savedMutedState === 'false') {
+        this.audioService.play();
+      }
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('scroll', handleUserInteraction);
+    };
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('scroll', handleUserInteraction);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  toggleAudio() {
+    this.audioService.toggleAudio();
+  }
+
   scrollTo(section: string) {
     event?.preventDefault();
     const element = document.getElementById(section);

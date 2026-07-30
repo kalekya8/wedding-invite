@@ -9,67 +9,29 @@ namespace WeddingInvite.API.Controllers;
 public class RsvpsController : ControllerBase
 {
     private readonly IRsvpService _rsvpService;
-    private readonly IInvitationService _invitationService;
 
-    public RsvpsController(IRsvpService rsvpService, IInvitationService invitationService)
+    public RsvpsController(IRsvpService rsvpService)
     {
         _rsvpService = rsvpService;
-        _invitationService = invitationService;
     }
 
     [HttpPost]
     public async Task<IActionResult> SubmitRsvp([FromBody] SubmitRsvpRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.InvitationCode))
-            return BadRequest(new { success = false, message = "Invitation code is required." });
-
-        var invitation = await _invitationService.GetInvitationByCodeAsync(request.InvitationCode);
-        if (invitation == null)
-            return NotFound(new { success = false, message = "Invitation not found." });
+        if (request?.EventResponses == null || request.EventResponses.Count == 0)
+            return BadRequest(new { success = false, message = "Event responses are required." });
 
         try
         {
-            var eventResponses = new List<GuestEventResponse>();
-
-            foreach (var dto in request.EventResponses)
+            var responses = request.EventResponses.Select(dto => new RsvpResponse
             {
-                Guid eventId;
+                EventId = int.Parse(dto.EventId),
+                GuestName = dto.GuestName,
+                FoodPreference = dto.FoodPreference
+            }).ToList();
 
-                // Try to parse as GUID first, then try as integer display order
-                if (!Guid.TryParse(dto.EventId, out eventId))
-                {
-                    if (int.TryParse(dto.EventId, out int displayOrder))
-                    {
-                        // Find event by display order
-                        var evt = await _invitationService.GetEventByDisplayOrderAsync(displayOrder);
-                        if (evt == null)
-                            return BadRequest(new { success = false, message = $"Event with display order {displayOrder} not found." });
-                        eventId = evt.Id;
-                    }
-                    else
-                    {
-                        return BadRequest(new { success = false, message = $"Invalid event ID format: {dto.EventId}" });
-                    }
-                }
-
-                eventResponses.Add(new GuestEventResponse
-                {
-                    EventId = eventId,
-                    InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
-                    GuestName = dto.GuestName,
-                    AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
-                    FoodPreference = dto.FoodPreference,
-                    DietaryRestrictions = dto.DietaryRestrictions,
-                    SpecialRequests = dto.SpecialRequests
-                });
-            }
-
-            var (success, editToken, message) = await _rsvpService.SubmitRsvpAsync(
-                invitation.Id,
-                eventResponses,
-                request.MessageToCouple);
-
-            return Ok(new { success, editToken, message });
+            await _rsvpService.SubmitRsvpAsync(responses);
+            return Ok(new { success = true, message = "RSVP submitted successfully" });
         }
         catch (Exception ex)
         {
@@ -77,72 +39,29 @@ public class RsvpsController : ControllerBase
         }
     }
 
-    [HttpGet("manage/{editToken}")]
-    public async Task<IActionResult> GetRsvp(string editToken)
-    {
-        var (success, rsvp, message) = await _rsvpService.GetRsvpByEditTokenAsync(editToken);
-
-        if (!success)
-            return Unauthorized(new { success, message });
-
-        return Ok(new { success, rsvp, message });
-    }
-
-    [HttpPut("manage/{editToken}")]
-    public async Task<IActionResult> UpdateRsvp(string editToken, [FromBody] UpdateRsvpRequest request)
-    {
-        var eventResponses = request.EventResponses.ConvertAll(dto => new GuestEventResponse
-        {
-            Id = Guid.NewGuid(),
-            EventId = Guid.Parse(dto.EventId),
-            InvitedGuestId = dto.GuestId != null ? Guid.Parse(dto.GuestId) : null,
-            GuestName = dto.GuestName,
-            AttendanceStatus = (int)Enum.Parse<AttendanceStatus>(dto.AttendanceStatus, ignoreCase: true),
-            FoodPreference = dto.FoodPreference,
-            DietaryRestrictions = dto.DietaryRestrictions,
-            SpecialRequests = dto.SpecialRequests,
-            UpdatedAt = DateTime.UtcNow
-        });
-
-        var (success, message) = await _rsvpService.UpdateRsvpAsync(
-            editToken,
-            eventResponses,
-            request.MessageToCouple);
-
-        if (!success)
-            return Unauthorized(new { success, message });
-
-        return Ok(new { success, message });
-    }
-
     [HttpGet("list")]
     public async Task<IActionResult> GetGuestList()
     {
-        var guestResponses = await _rsvpService.GetAllGuestResponsesAsync();
-        return Ok(guestResponses);
+        var events = await _rsvpService.GetResponsesByEventAsync();
+        return Ok(new { success = true, events });
+    }
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllResponses()
+    {
+        var responses = await _rsvpService.GetAllResponsesAsync();
+        return Ok(new { success = true, responses });
     }
 }
 
 public class SubmitRsvpRequest
 {
-    public string InvitationCode { get; set; } = string.Empty;
     public List<GuestEventResponseDto> EventResponses { get; set; } = new();
-    public string? MessageToCouple { get; set; }
-}
-
-public class UpdateRsvpRequest
-{
-    public List<GuestEventResponseDto> EventResponses { get; set; } = new();
-    public string? MessageToCouple { get; set; }
 }
 
 public class GuestEventResponseDto
 {
     public string EventId { get; set; } = string.Empty;
-    public string? GuestId { get; set; }
     public string GuestName { get; set; } = string.Empty;
-    public string AttendanceStatus { get; set; } = "attending";
     public string? FoodPreference { get; set; }
-    public string? DietaryRestrictions { get; set; }
-    public string? SpecialRequests { get; set; }
 }

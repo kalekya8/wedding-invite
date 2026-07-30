@@ -6,33 +6,9 @@ namespace WeddingInvite.API.Services;
 
 public interface IRsvpService
 {
-    Task<(bool Success, string EditToken, string Message)> SubmitRsvpAsync(
-        Guid invitationId,
-        List<GuestEventResponse> eventResponses,
-        string? messageToCouple = null);
-
-    Task<(bool Success, RsvpSubmission? Rsvp, string Message)> GetRsvpByEditTokenAsync(string editToken);
-
-    Task<(bool Success, string Message)> UpdateRsvpAsync(
-        string editToken,
-        List<GuestEventResponse> eventResponses,
-        string? messageToCouple = null);
-
-    Task<List<RsvpSubmission>> GetAllRsvpsAsync();
-
-    Task<(int Attending, int Maybe, int Declined)> GetAttendanceStatsAsync();
-
-    Task<List<GuestListDto>> GetAllGuestResponsesAsync();
-}
-
-public class GuestListDto
-{
-    public string Id { get; set; } = string.Empty;
-    public string GuestName { get; set; } = string.Empty;
-    public string EventName { get; set; } = string.Empty;
-    public string AttendanceStatus { get; set; } = string.Empty;
-    public string FoodPreference { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
+    Task<bool> SubmitRsvpAsync(List<RsvpResponse> responses);
+    Task<List<EventRsvpDto>> GetResponsesByEventAsync();
+    Task<List<GuestListDto>> GetAllResponsesAsync();
 }
 
 public class RsvpService : IRsvpService
@@ -44,125 +20,108 @@ public class RsvpService : IRsvpService
         _context = context;
     }
 
-    public async Task<(bool Success, string EditToken, string Message)> SubmitRsvpAsync(
-        Guid invitationId,
-        List<GuestEventResponse> eventResponses,
-        string? messageToCouple = null)
+    public async Task<bool> SubmitRsvpAsync(List<RsvpResponse> responses)
     {
-        try
+        foreach (var response in responses)
         {
-            var editToken = GenerateSecureToken();
-            var editTokenHash = HashToken(editToken);
+            response.Id = Guid.NewGuid();
+            response.CreatedAt = DateTime.UtcNow;
+            response.UpdatedAt = DateTime.UtcNow;
+        }
 
-            var rsvp = new RsvpSubmission
+        _context.RsvpResponses.AddRange(responses);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<List<EventRsvpDto>> GetResponsesByEventAsync()
+    {
+        var eventNames = new Dictionary<int, string>
+        {
+            { 1, "Haldi & Mehendi" },
+            { 2, "Pellikuthuru" },
+            { 3, "Pellikoduku" },
+            { 4, "Wedding Ceremony" },
+            { 5, "Reception" }
+        };
+
+        var responses = await _context.RsvpResponses
+            .OrderBy(r => r.EventId)
+            .ThenBy(r => r.GuestName)
+            .ToListAsync();
+
+        var result = new List<EventRsvpDto>();
+
+        foreach (var eventId in new[] { 1, 2, 3, 4, 5 })
+        {
+            var eventResponses = responses.Where(r => r.EventId == eventId).ToList();
+
+            var dto = new EventRsvpDto
             {
-                Id = Guid.NewGuid(),
-                InvitationId = invitationId,
-                EditToken = editToken,
-                EditTokenHash = editTokenHash,
-                MessageToCouple = messageToCouple,
-                SubmittedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                EventId = eventId,
+                EventName = eventNames[eventId],
+                Attendees = eventResponses.Select(r => new GuestDto
+                {
+                    Name = r.GuestName,
+                    Food = r.FoodPreference
+                }).ToList(),
+                Stats = new StatsDto
+                {
+                    TotalAttending = eventResponses.Count,
+                    Vegetarian = eventResponses.Count(r => r.FoodPreference == "vegetarian"),
+                    NonVegetarian = eventResponses.Count(r => r.FoodPreference == "nonVegetarian"),
+                    Vegan = eventResponses.Count(r => r.FoodPreference == "vegan")
+                }
             };
 
-            _context.RsvpSubmissions.Add(rsvp);
-            await _context.SaveChangesAsync();
+            result.Add(dto);
+        }
 
-            // Add event responses in a separate transaction after RSVP is saved
-            foreach (var response in eventResponses)
+        return result;
+    }
+
+    public async Task<List<GuestListDto>> GetAllResponsesAsync()
+    {
+        return await _context.RsvpResponses
+            .OrderBy(r => r.EventId)
+            .ThenBy(r => r.GuestName)
+            .Select(r => new GuestListDto
             {
-                response.Id = Guid.NewGuid();
-                response.UpdatedAt = DateTime.UtcNow;
-                _context.GuestEventResponses.Add(response);
-            }
-
-            await _context.SaveChangesAsync();
-
-            return (true, editToken, "RSVP submitted successfully.");
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Error submitting RSVP: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<(bool Success, RsvpSubmission? Rsvp, string Message)> GetRsvpByEditTokenAsync(string editToken)
-    {
-        var editTokenHash = HashToken(editToken);
-
-        var rsvp = await _context.RsvpSubmissions
-            .Include(r => r.EventResponses)
-            .FirstOrDefaultAsync(r => r.EditTokenHash == editTokenHash);
-
-        if (rsvp == null)
-            return (false, null, "Invalid edit token.");
-
-        return (true, rsvp, "RSVP retrieved successfully.");
-    }
-
-    public async Task<(bool Success, string Message)> UpdateRsvpAsync(
-        string editToken,
-        List<GuestEventResponse> eventResponses,
-        string? messageToCouple = null)
-    {
-        var result = await GetRsvpByEditTokenAsync(editToken);
-        if (!result.Success || result.Rsvp == null)
-            return (false, "Invalid edit token.");
-
-        result.Rsvp.EventResponses.Clear();
-        result.Rsvp.EventResponses = eventResponses;
-        result.Rsvp.MessageToCouple = messageToCouple;
-        result.Rsvp.UpdatedAt = DateTime.UtcNow;
-
-        _context.RsvpSubmissions.Update(result.Rsvp);
-        await _context.SaveChangesAsync();
-
-        return (true, "RSVP updated successfully.");
-    }
-
-    public async Task<List<RsvpSubmission>> GetAllRsvpsAsync()
-    {
-        return await _context.RsvpSubmissions
-            .Include(r => r.EventResponses)
+                GuestName = r.GuestName,
+                EventId = r.EventId,
+                FoodPreference = r.FoodPreference,
+                CreatedAt = r.CreatedAt
+            })
             .ToListAsync();
     }
+}
 
-    public async Task<(int Attending, int Maybe, int Declined)> GetAttendanceStatsAsync()
-    {
-        var responses = await _context.GuestEventResponses.ToListAsync();
+public class EventRsvpDto
+{
+    public int EventId { get; set; }
+    public string EventName { get; set; } = string.Empty;
+    public List<GuestDto> Attendees { get; set; } = new();
+    public StatsDto Stats { get; set; } = new();
+}
 
-        return (
-            responses.Count(r => r.AttendanceStatus == (int)Models.AttendanceStatus.Attending),
-            responses.Count(r => r.AttendanceStatus == (int)Models.AttendanceStatus.Maybe),
-            responses.Count(r => r.AttendanceStatus == (int)Models.AttendanceStatus.Declined)
-        );
-    }
+public class GuestDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Food { get; set; }
+}
 
-    public async Task<List<GuestListDto>> GetAllGuestResponsesAsync()
-    {
-        var responses = await _context.GuestEventResponses
-            .Include(r => r.Event)
-            .ToListAsync();
+public class StatsDto
+{
+    public int TotalAttending { get; set; }
+    public int Vegetarian { get; set; }
+    public int NonVegetarian { get; set; }
+    public int Vegan { get; set; }
+}
 
-        return responses.Select(r => new GuestListDto
-        {
-            Id = r.Id.ToString(),
-            GuestName = r.GuestName,
-            EventName = r.Event?.Name ?? "Unknown Event",
-            AttendanceStatus = ((Models.AttendanceStatus)r.AttendanceStatus).ToString().ToLower(),
-            FoodPreference = r.FoodPreference ?? "Not specified",
-            CreatedAt = r.UpdatedAt
-        }).ToList();
-    }
-
-    private static string GenerateSecureToken()
-    {
-        return Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
-    }
-
-    private static string HashToken(string token)
-    {
-        using var sha256 = System.Security.Cryptography.SHA256.Create();
-        return Convert.ToBase64String(sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(token)));
-    }
+public class GuestListDto
+{
+    public string GuestName { get; set; } = string.Empty;
+    public int EventId { get; set; }
+    public string? FoodPreference { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

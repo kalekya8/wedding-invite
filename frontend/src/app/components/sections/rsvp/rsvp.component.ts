@@ -659,28 +659,20 @@ export class RsvpComponent implements OnInit {
         eventResponses.push({
           eventId: e.eventId,
           guestName: this.formData.name,
-          attendanceStatus: 'attending',
-          foodPreference: this.formData.foodPreference,
-          dietaryRestrictions: undefined,
-          specialRequests: undefined
+          foodPreference: this.formData.foodPreference
         });
 
         this.formData.guests.forEach(guest => {
           eventResponses.push({
             eventId: e.eventId,
             guestName: guest.name,
-            attendanceStatus: 'attending',
-            foodPreference: guest.foodPreference,
-            dietaryRestrictions: undefined,
-            specialRequests: undefined
+            foodPreference: guest.foodPreference
           });
         });
       });
 
     const payload = {
-      invitationCode: this.invitationCode,
-      eventResponses: eventResponses,
-      messageToCouple: this.formData.messageToCouple
+      eventResponses: eventResponses
     };
 
     this.rsvpService.submitRsvp(payload).subscribe({

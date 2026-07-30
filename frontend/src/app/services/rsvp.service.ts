@@ -5,18 +5,12 @@ import { environment } from '../../environments/environment';
 
 export interface GuestEventResponse {
   eventId: string;
-  guestId?: string;
   guestName: string;
-  attendanceStatus: string;
   foodPreference?: string;
-  dietaryRestrictions?: string;
-  specialRequests?: string;
 }
 
 export interface SubmitRsvpRequest {
-  invitationCode: string;
   eventResponses: GuestEventResponse[];
-  messageToCouple?: string;
 }
 
 @Injectable({
@@ -31,11 +25,11 @@ export class RsvpService {
     return this.http.post(`${this.apiUrl}`, request);
   }
 
-  getRsvp(editToken: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/manage/${editToken}`);
+  getGuestList(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/list`);
   }
 
-  updateRsvp(editToken: string, request: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/manage/${editToken}`, request);
+  getAllResponses(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/all`);
   }
 }

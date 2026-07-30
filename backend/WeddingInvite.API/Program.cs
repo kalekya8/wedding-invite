@@ -51,10 +51,7 @@ builder.Services.AddCors(options =>
 });
 
 // Services
-builder.Services.AddScoped<IInvitationService, InvitationService>();
 builder.Services.AddScoped<IRsvpService, RsvpService>();
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IVenueService, VenueService>();
 
 var app = builder.Build();
 

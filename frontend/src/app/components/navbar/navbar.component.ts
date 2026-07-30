@@ -193,20 +193,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(private audioService: AudioService) {}
 
   ngOnInit() {
-    console.log('🎵 NavbarComponent: Initializing');
-
     // Subscribe to muted state
     const sub = this.isMuted$.subscribe(muted => {
-      console.log('🎵 NavbarComponent: Muted state changed to:', muted);
       this.isMutedValue = muted;
     });
     this.subscriptions.push(sub);
 
     // Ensure audio plays on first user interaction
     const handleUserInteraction = () => {
-      console.log('🎵 NavbarComponent: User interaction detected, muted:', this.isMutedValue);
       if (!this.isMutedValue) {
-        console.log('🎵 NavbarComponent: Playing audio on user interaction');
         this.audioService.play();
       }
       document.removeEventListener('click', handleUserInteraction);
@@ -215,16 +210,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     };
 
     // Listen for user interaction to trigger audio playback
-    console.log('🎵 NavbarComponent: Adding interaction listeners');
     document.addEventListener('click', handleUserInteraction);
     document.addEventListener('scroll', handleUserInteraction);
     document.addEventListener('touchstart', handleUserInteraction);
 
     // Try to play immediately (might work on some browsers)
     setTimeout(() => {
-      console.log('🎵 NavbarComponent: Attempting immediate play, muted:', this.isMutedValue);
       if (!this.isMutedValue) {
-        console.log('🎵 NavbarComponent: Calling play on audio service');
         this.audioService.play();
       }
     }, 1000);
@@ -235,7 +227,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   toggleAudio() {
-    console.log('🎵 NavbarComponent: Toggle audio button clicked');
     this.audioService.toggleAudio();
   }
 

@@ -223,22 +223,14 @@ export class ConfettiService {
   };
 
   burst(centerX: number, centerY: number, duration: number = 3000) {
-    if (this.isRunning) {
-      console.log('🎉 ConfettiService: Confetti already running, skipping');
-      return;
-    }
-
-    console.log('🎉 ConfettiService: Burst triggered at', centerX, centerY, 'duration:', duration);
+    if (this.isRunning) return;
 
     this.isRunning = true;
     this.duration = duration;
     this.startTime = 0;
 
     const particleCount = this.getParticleCount();
-    console.log('🎉 ConfettiService: Creating', particleCount, 'particles');
     this.createParticles(centerX, centerY, particleCount);
-
-    console.log('🎉 ConfettiService: Starting animation with', this.particles.length, 'particles');
 
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);

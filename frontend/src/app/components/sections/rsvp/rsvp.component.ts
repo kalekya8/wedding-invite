@@ -678,14 +678,12 @@ export class RsvpComponent implements OnInit {
 
     this.rsvpService.submitRsvp(payload).subscribe({
       next: () => {
-        console.log('✅ RsvpComponent: RSVP submitted successfully');
         this.isSubmitting = false;
         this.submitted = true;
 
         // Trigger confetti burst from center of screen after a short delay
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
-        console.log('✅ RsvpComponent: Triggering success confetti at', { centerX, centerY });
 
         setTimeout(() => {
           this.confettiService.burst(centerX, centerY, 3500);
@@ -694,7 +692,6 @@ export class RsvpComponent implements OnInit {
       error: (error: any) => {
         this.isSubmitting = false;
         this.error = error.error?.message || 'Failed to submit RSVP. Please try again.';
-        console.error('❌ RsvpComponent: RSVP submission error:', error);
       }
     });
   }

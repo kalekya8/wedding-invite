@@ -129,12 +129,7 @@ export class EnvelopeComponent implements OnInit {
   }
 
   openEnvelope() {
-    if (this.isOpened()) {
-      console.log('📮 EnvelopeComponent: Already opened');
-      return;
-    }
-
-    console.log('📮 EnvelopeComponent: Opening envelope...');
+    if (this.isOpened()) return;
 
     // Get seal center position for confetti burst
     const sealElement = this.sealRef?.nativeElement;
@@ -142,12 +137,9 @@ export class EnvelopeComponent implements OnInit {
     const centerX = sealRect.left + sealRect.width / 2;
     const centerY = sealRect.top + sealRect.height / 2;
 
-    console.log('📮 EnvelopeComponent: Seal position:', { centerX, centerY });
-
     const timeline = gsap.timeline();
 
     // Seal press inward (100ms)
-    console.log('📮 EnvelopeComponent: Starting seal press animation');
     timeline.to(this.sealRef?.nativeElement, {
       duration: 0.1,
       scale: 0.95,
@@ -163,7 +155,6 @@ export class EnvelopeComponent implements OnInit {
 
     // Confetti burst starts (250ms)
     setTimeout(() => {
-      console.log('📮 EnvelopeComponent: Triggering confetti burst');
       this.confettiService.burst(centerX, centerY, 3000);
     }, 250);
 
@@ -186,7 +177,6 @@ export class EnvelopeComponent implements OnInit {
 
     // After animation, show invitation (3000ms)
     setTimeout(() => {
-      console.log('📮 EnvelopeComponent: Opening invitation');
       this.isOpened.set(true);
     }, 1000);
   }

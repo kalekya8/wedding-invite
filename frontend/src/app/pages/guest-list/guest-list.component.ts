@@ -6,15 +6,26 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 interface GuestResponse {
-  id: string;
   guestName: string;
-  eventName: string;
-  attendanceStatus: string;
-  foodPreference: string;
+  eventId: number;
+  foodPreference: string | null;
   createdAt: string;
 }
 
+interface EventGroupResponse {
+  eventId: number;
+  eventName: string;
+  attendees: Array<{ name: string; food: string | null }>;
+  stats: {
+    totalAttending: number;
+    vegetarian: number;
+    nonVegetarian: number;
+    vegan: number;
+  };
+}
+
 interface EventGroup {
+  eventId: number;
   eventName: string;
   guests: GuestResponse[];
   attendingCount: number;
@@ -68,10 +79,6 @@ interface EventGroup {
             <div class="stat-number">{{ attendingCount }}</div>
             <div class="stat-label">Attending</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-number">{{ declinedCount }}</div>
-            <div class="stat-label">Declined</div>
-          </div>
         </div>
 
         <!-- Filters -->
@@ -83,11 +90,6 @@ interface EventGroup {
             placeholder="Search by guest name..."
             class="search-input"
           >
-          <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()" class="filter-select">
-            <option value="">All Status</option>
-            <option value="attending">Attending</option>
-            <option value="declined">Declined</option>
-          </select>
           <select [(ngModel)]="filterFood" (ngModelChange)="applyFilters()" class="filter-select">
             <option value="">All Food Preferences</option>
             <option value="vegetarian">Vegetarian</option>
@@ -103,7 +105,6 @@ interface EventGroup {
               <h3>{{ eventGroup.eventName }}</h3>
               <div class="event-stats">
                 <span class="event-stat attending">✓ {{ eventGroup.attendingCount }} Attending</span>
-                <span class="event-stat declined">✕ {{ eventGroup.declinedCount }} Declined</span>
               </div>
             </div>
 
@@ -112,20 +113,14 @@ interface EventGroup {
                 <thead>
                   <tr>
                     <th>Guest Name</th>
-                    <th>Status</th>
                     <th>Food Preference</th>
                     <th>RSVP Date</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let guest of eventGroup.guests" [class.declined]="guest.attendanceStatus === 'declined'">
+                  <tr *ngFor="let guest of eventGroup.guests">
                     <td>{{ guest.guestName }}</td>
-                    <td>
-                      <span class="status-badge" [class.attending]="guest.attendanceStatus === 'attending'" [class.declined]="guest.attendanceStatus === 'declined'">
-                        {{ guest.attendanceStatus | titlecase }}
-                      </span>
-                    </td>
-                    <td>{{ guest.foodPreference | titlecase }}</td>
+                    <td>{{ guest.foodPreference ? (guest.foodPreference | titlecase) : '—' }}</td>
                     <td>{{ guest.createdAt | date: 'MMM d, yyyy' }}</td>
                   </tr>
                 </tbody>
@@ -569,12 +564,21 @@ export class GuestListComponent implements OnInit {
     const url = `${this.apiUrl}/rsvps/list`;
     console.log('Attempting to fetch guest list from:', url);
 
-    this.http.get<GuestResponse[]>(url).subscribe({
-      next: (data) => {
-        console.log('Guest list fetched successfully:', data.length, 'guests');
-        this.guests = data;
-        this.updateStats();
-        this.applyFilters();
+    this.http.get<{ success: boolean; events: EventGroupResponse[] }>(url).subscribe({
+      next: (response) => {
+        if (response?.events) {
+          this.guests = response.events.flatMap(event =>
+            event.attendees.map(attendee => ({
+              guestName: attendee.name,
+              eventId: event.eventId,
+              foodPreference: attendee.food,
+              createdAt: new Date().toISOString()
+            }))
+          );
+          console.log('Guest list fetched successfully:', this.guests.length, 'guests');
+          this.updateStats();
+          this.applyFilters();
+        }
       },
       error: (error) => {
         console.error('Error fetching guest list:', error);
@@ -587,8 +591,8 @@ export class GuestListComponent implements OnInit {
 
   updateStats() {
     this.totalGuests = this.guests.length;
-    this.attendingCount = this.guests.filter(g => g.attendanceStatus === 'attending').length;
-    this.declinedCount = this.guests.filter(g => g.attendanceStatus === 'declined').length;
+    this.attendingCount = this.guests.length;
+    this.declinedCount = 0;
   }
 
   applyFilters() {
@@ -596,45 +600,55 @@ export class GuestListComponent implements OnInit {
       const matchesSearch = !this.searchQuery ||
         guest.guestName.toLowerCase().includes(this.searchQuery.toLowerCase());
 
-      const matchesStatus = !this.filterStatus || guest.attendanceStatus === this.filterStatus;
       const matchesFood = !this.filterFood || guest.foodPreference === this.filterFood;
 
-      return matchesSearch && matchesStatus && matchesFood;
+      return matchesSearch && matchesFood;
     });
 
-    // Group by event
-    const groupMap = new Map<string, GuestResponse[]>();
+    // Group by eventId
+    const groupMap = new Map<number, GuestResponse[]>();
+    const eventNames: { [key: number]: string } = {
+      1: 'Haldi & Mehendi',
+      2: 'Pellikuthuru',
+      3: 'Pellikoduku',
+      4: 'Wedding Ceremony',
+      5: 'Reception'
+    };
+
     filteredGuests.forEach(guest => {
-      if (!groupMap.has(guest.eventName)) {
-        groupMap.set(guest.eventName, []);
+      if (!groupMap.has(guest.eventId)) {
+        groupMap.set(guest.eventId, []);
       }
-      groupMap.get(guest.eventName)!.push(guest);
+      groupMap.get(guest.eventId)!.push(guest);
     });
 
     // Create event groups
-    this.eventGroups = Array.from(groupMap.entries()).map(([eventName, guests]) => ({
-      eventName,
+    this.eventGroups = Array.from(groupMap.entries()).map(([eventId, guests]) => ({
+      eventId,
+      eventName: eventNames[eventId],
       guests,
-      attendingCount: guests.filter(g => g.attendanceStatus === 'attending').length,
-      declinedCount: guests.filter(g => g.attendanceStatus === 'declined').length
+      attendingCount: guests.length,
+      declinedCount: 0
     }));
 
-    // Sort events in order
-    const eventOrder = ['Haldi & Mehendi - 25 August', 'Pellikuthuru / Pellikoduku - 26 August', 'Wedding Ceremony - 27 August', 'Reception - 27 August'];
-    this.eventGroups.sort((a, b) => {
-      const indexA = eventOrder.indexOf(a.eventName);
-      const indexB = eventOrder.indexOf(b.eventName);
-      return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
-    });
+    // Sort events by ID
+    this.eventGroups.sort((a, b) => a.eventId - b.eventId);
   }
 
   exportToCSV() {
-    const headers = ['Guest Name', 'Event', 'Status', 'Food Preference', 'Date'];
+    const eventNames: { [key: number]: string } = {
+      1: 'Haldi & Mehendi',
+      2: 'Pellikuthuru',
+      3: 'Pellikoduku',
+      4: 'Wedding Ceremony',
+      5: 'Reception'
+    };
+
+    const headers = ['Guest Name', 'Event', 'Food Preference', 'Date'];
     const rows = this.guests.map(guest => [
       guest.guestName,
-      guest.eventName,
-      guest.attendanceStatus,
-      guest.foodPreference,
+      eventNames[guest.eventId],
+      guest.foodPreference || '—',
       new Date(guest.createdAt).toLocaleDateString()
     ]);
 

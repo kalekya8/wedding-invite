@@ -129,13 +129,20 @@ export class EnvelopeComponent implements OnInit {
   }
 
   openEnvelope() {
-    if (this.isOpened()) return;
+    console.log('🔍 DEBUG: Wax seal clicked - openEnvelope() called');
+
+    if (this.isOpened()) {
+      console.log('🔍 DEBUG: Already opened, returning');
+      return;
+    }
 
     // Get seal center position for confetti burst
     const sealElement = this.sealRef?.nativeElement;
     const sealRect = sealElement.getBoundingClientRect();
     const centerX = sealRect.left + sealRect.width / 2;
     const centerY = sealRect.top + sealRect.height / 2;
+
+    console.log('🔍 DEBUG: Seal position:', { centerX, centerY });
 
     const timeline = gsap.timeline();
 
@@ -155,7 +162,9 @@ export class EnvelopeComponent implements OnInit {
 
     // Confetti burst starts (250ms)
     setTimeout(() => {
+      console.log('🔍 DEBUG: Triggering confetti burst at', { centerX, centerY });
       this.confettiService.burst(centerX, centerY, 3000);
+      console.log('🔍 DEBUG: Confetti burst called');
     }, 250);
 
     // Seal rises and rotates slightly (500ms)

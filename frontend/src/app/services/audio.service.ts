@@ -21,23 +21,44 @@ export class AudioService {
   private initializeAudio() {
     if (typeof document === 'undefined') return;
 
+    console.log('🎵 DEBUG: Initializing audio...');
+
     this.audio = new Audio('/assets/audio/Radha Ramanam _ Tipparaa Meesam _ Anurag Kulkarni _ Nutana Mohan _ Sing Telugu.mp3');
+    console.log('🎵 DEBUG: Audio element created');
+
     this.audio.volume = 0.5;
     this.audio.loop = true;
     this.audio.crossOrigin = 'anonymous';
     this.audio.preload = 'auto';
 
+    console.log('🎵 DEBUG: Audio properties set, volume:', this.audio.volume);
+
     this.audio.addEventListener('play', () => {
+      console.log('▶️ DEBUG: Audio playing');
       this.isPlaying$.next(true);
       this.isMuted$.next(false);
     });
 
     this.audio.addEventListener('pause', () => {
+      console.log('⏸️ DEBUG: Audio paused');
       this.isPlaying$.next(false);
     });
 
     this.audio.addEventListener('ended', () => {
+      console.log('🔄 DEBUG: Audio ended (will loop)');
       this.isPlaying$.next(false);
+    });
+
+    this.audio.addEventListener('loadstart', () => {
+      console.log('📥 DEBUG: Audio loading started');
+    });
+
+    this.audio.addEventListener('canplay', () => {
+      console.log('✅ DEBUG: Audio can play');
+    });
+
+    this.audio.addEventListener('error', (e) => {
+      console.error('❌ DEBUG: Audio error:', e);
     });
 
     // Default: NOT muted on initialization
@@ -55,8 +76,13 @@ export class AudioService {
   private setupUserInteractionListener() {
     if (typeof document === 'undefined') return;
 
+    console.log('🎵 DEBUG: Setting up user interaction listener');
+
     const playAudioOnInteraction = () => {
+      console.log('🎵 DEBUG: User interaction detected, userInteracted:', this.userInteracted, 'isMuted:', this.isMuted$.value);
+
       if (!this.userInteracted && !this.isMuted$.value) {
+        console.log('🎵 DEBUG: Playing audio on first user interaction');
         this.userInteracted = true;
         this.play();
       }
@@ -86,17 +112,32 @@ export class AudioService {
   }
 
   play() {
-    if (!this.audio) return;
+    if (!this.audio) {
+      console.error('❌ DEBUG: No audio element');
+      return;
+    }
 
-    this.audio.play().catch(err => {
-      // Silent error - browser autoplay policy
-    });
-    this.isMuted$.next(false);
+    console.log('▶️ DEBUG: Calling audio.play()');
+
+    this.audio.play()
+      .then(() => {
+        console.log('✅ DEBUG: audio.play() succeeded');
+        this.isMuted$.next(false);
+      })
+      .catch(err => {
+        console.error('❌ DEBUG: audio.play() failed:', err.name, err.message);
+      });
+
     localStorage.setItem('wedding_audio_muted', 'false');
   }
 
   pause() {
-    if (!this.audio) return;
+    if (!this.audio) {
+      console.error('❌ DEBUG: No audio element');
+      return;
+    }
+
+    console.log('🔇 DEBUG: Pausing audio');
     this.audio.pause();
     this.isMuted$.next(true);
     localStorage.setItem('wedding_audio_muted', 'true');

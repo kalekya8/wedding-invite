@@ -23,7 +23,10 @@ export class AudioService {
 
     console.log('🎵 DEBUG: Initializing audio...');
 
-    this.audio = new Audio('/assets/audio/Radha Ramanam _ Tipparaa Meesam _ Anurag Kulkarni _ Nutana Mohan _ Sing Telugu.mp3');
+    const audioPath = '/assets/audio/Radha%20Ramanam%20_%20Tipparaa%20Meesam%20_%20Anurag%20Kulkarni%20_%20Nutana%20Mohan%20_%20Sing%20Telugu.mp3';
+    console.log('🎵 DEBUG: Audio path:', audioPath);
+
+    this.audio = new Audio(audioPath);
     console.log('🎵 DEBUG: Audio element created');
 
     this.audio.volume = 0.5;

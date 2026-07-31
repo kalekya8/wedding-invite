@@ -1,7 +1,8 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AudioService } from '../../services/audio.service';
+import { MusicNotesService } from '../../services/music-notes.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,10 +21,12 @@ import { Subscription } from 'rxjs';
           <li><a href="#rsvp" (click)="scrollTo('rsvp')">RSVP</a></li>
         </ul>
 
-        <button class="audio-button"
+        <button #audioButton
+                class="audio-button"
                 (click)="toggleAudio()"
                 [class.muted]="isMuted$ | async"
-                [title]="(isMuted$ | async) ? 'Click to play music' : 'Click to mute music'"
+                [class.playing]="!(isMuted$ | async)"
+                [title]="(isMuted$ | async) ? 'Music Muted' : 'Music Playing'"
                 [@fadeIn]>
           <span class="audio-icon">♪</span>
         </button>
@@ -111,19 +114,27 @@ import { Subscription } from 'rxjs';
       transition: all 0.3s ease;
       padding: 0;
       min-width: 40px;
+      position: relative;
 
       .audio-icon {
         font-size: 20px;
         color: #7a9d5d;
         display: block;
         line-height: 1;
-        animation: pulse 1.5s ease-in-out infinite;
       }
 
       &:hover {
         background: rgba(122, 157, 93, 0.1);
         border-color: #7a9d5d;
         transform: scale(1.1);
+      }
+
+      &.playing {
+        box-shadow: 0 0 12px rgba(200, 162, 74, 0.4);
+
+        .audio-icon {
+          animation: pulse 1.5s ease-in-out infinite;
+        }
       }
 
       &.muted {
@@ -186,44 +197,32 @@ import { Subscription } from 'rxjs';
   ]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  @ViewChild('audioButton') audioButton?: ElementRef;
+
   isMuted$ = this.audioService.isMuted;
   private subscriptions: Subscription[] = [];
   private isMutedValue = false;
 
-  constructor(private audioService: AudioService) {}
+  constructor(private audioService: AudioService, private musicNotesService: MusicNotesService) {}
 
   ngOnInit() {
     // Subscribe to muted state
     const sub = this.isMuted$.subscribe(muted => {
       this.isMutedValue = muted;
+
+      // Control music notes based on mute state
+      if (muted) {
+        this.musicNotesService.stopPlaying();
+      } else if (this.audioButton) {
+        this.musicNotesService.startPlaying(this.audioButton.nativeElement);
+      }
     });
     this.subscriptions.push(sub);
-
-    // Ensure audio plays on first user interaction
-    const handleUserInteraction = () => {
-      if (!this.isMutedValue) {
-        this.audioService.play();
-      }
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('scroll', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-    };
-
-    // Listen for user interaction to trigger audio playback
-    document.addEventListener('click', handleUserInteraction);
-    document.addEventListener('scroll', handleUserInteraction);
-    document.addEventListener('touchstart', handleUserInteraction);
-
-    // Try to play immediately (might work on some browsers)
-    setTimeout(() => {
-      if (!this.isMutedValue) {
-        this.audioService.play();
-      }
-    }, 1000);
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.musicNotesService.destroy();
   }
 
   toggleAudio() {

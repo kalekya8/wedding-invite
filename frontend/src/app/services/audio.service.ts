@@ -8,13 +8,14 @@ export class AudioService {
   private audio: HTMLAudioElement | null = null;
   private isMuted$ = new BehaviorSubject<boolean>(false);
   private isPlaying$ = new BehaviorSubject<boolean>(false);
-  private autoplayAttempted = false;
+  private userInteracted = false;
 
   isMuted = this.isMuted$.asObservable();
   isPlaying = this.isPlaying$.asObservable();
 
   constructor() {
     this.initializeAudio();
+    this.setupUserInteractionListener();
   }
 
   private initializeAudio() {
@@ -39,10 +40,6 @@ export class AudioService {
       this.isPlaying$.next(false);
     });
 
-    this.audio.addEventListener('error', (e) => {
-      // Silent error handling
-    });
-
     // Default: NOT muted on initialization
     this.isMuted$.next(false);
 
@@ -52,30 +49,26 @@ export class AudioService {
     if (savedMutedState !== null) {
       const muted = JSON.parse(savedMutedState);
       this.isMuted$.next(muted);
-
-      // If not muted, try to play immediately
-      if (!muted) {
-        this.playAudioImmediately();
-      }
-    } else {
-      // Default: auto-play on first load
-      this.playAudioImmediately();
     }
   }
 
-  private playAudioImmediately() {
-    if (!this.audio || this.autoplayAttempted) {
-      return;
-    }
-    this.autoplayAttempted = true;
+  private setupUserInteractionListener() {
+    if (typeof document === 'undefined') return;
 
-    setTimeout(() => {
-      if (this.audio) {
-        this.audio.play().catch(err => {
-          // Silent error - browser autoplay policy
-        });
+    const playAudioOnInteraction = () => {
+      if (!this.userInteracted && !this.isMuted$.value) {
+        this.userInteracted = true;
+        this.play();
       }
-    }, 500);
+      // Remove listeners after first interaction
+      document.removeEventListener('click', playAudioOnInteraction);
+      document.removeEventListener('scroll', playAudioOnInteraction);
+      document.removeEventListener('touchstart', playAudioOnInteraction);
+    };
+
+    document.addEventListener('click', playAudioOnInteraction);
+    document.addEventListener('scroll', playAudioOnInteraction);
+    document.addEventListener('touchstart', playAudioOnInteraction);
   }
 
   toggleAudio() {
@@ -85,24 +78,18 @@ export class AudioService {
 
     if (currentMutedState) {
       // Unmute and play
-      this.audio.play().catch(err => {
-        // Silent error
-      });
-      this.isMuted$.next(false);
+      this.play();
     } else {
       // Mute and pause
-      this.audio.pause();
-      this.isMuted$.next(true);
+      this.pause();
     }
-
-    // Save state to localStorage
-    localStorage.setItem('wedding_audio_muted', JSON.stringify(!currentMutedState));
   }
 
   play() {
     if (!this.audio) return;
+
     this.audio.play().catch(err => {
-      // Silent error
+      // Silent error - browser autoplay policy
     });
     this.isMuted$.next(false);
     localStorage.setItem('wedding_audio_muted', 'false');

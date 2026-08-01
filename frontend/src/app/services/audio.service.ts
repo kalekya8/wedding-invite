@@ -75,6 +75,7 @@ export class AudioService {
     this.audio.addEventListener('play', () => {
       console.log(`[${new Date().getTime()}] ▶️ Audio play event triggered`);
       this.isPlaying$.next(true);
+      console.log(`[${new Date().getTime()}] ▶️ Setting isMuted$ to FALSE (audio playing)`);
       this.isMuted$.next(false);
     });
 
@@ -85,6 +86,8 @@ export class AudioService {
     this.audio.addEventListener('pause', () => {
       console.log(`[${new Date().getTime()}] ⏸️ Audio pause event`);
       this.isPlaying$.next(false);
+      console.log(`[${new Date().getTime()}] ⏸️ Setting isMuted$ to TRUE (audio paused)`);
+      this.isMuted$.next(true);
     });
 
     this.audio.addEventListener('ended', () => {
@@ -123,15 +126,20 @@ export class AudioService {
   }
 
   toggleAudio() {
-    if (!this.audio) return;
+    console.log(`[${new Date().getTime()}] 🔄 toggleAudio() called`);
+    if (!this.audio) {
+      console.log(`[${new Date().getTime()}] ❌ No audio element in toggleAudio()`);
+      return;
+    }
 
     const currentMutedState = this.isMuted$.value;
+    console.log(`[${new Date().getTime()}] 🔄 Current muted state: ${currentMutedState}`);
 
     if (currentMutedState) {
-      // Unmute and play
+      console.log(`[${new Date().getTime()}] 🔄 Currently muted - unmuting and playing`);
       this.play();
     } else {
-      // Mute and pause
+      console.log(`[${new Date().getTime()}] 🔄 Currently playing - muting and pausing`);
       this.pause();
     }
   }
@@ -159,6 +167,7 @@ export class AudioService {
 
   pause() {
     console.log(`[${new Date().getTime()}] ⏸️ pause() method called`);
+    console.trace('PAUSE STACK TRACE - WHO CALLED PAUSE?');
 
     if (!this.audio) {
       console.log(`[${new Date().getTime()}] ❌ No audio element in pause()`);
@@ -167,6 +176,7 @@ export class AudioService {
 
     console.log(`[${new Date().getTime()}] 🔇 Calling audio.pause()`);
     this.audio.pause();
+    console.log(`[${new Date().getTime()}] 🔇 Setting isMuted$ to TRUE in pause()`);
     this.isMuted$.next(true);
     localStorage.setItem('wedding_audio_muted', 'true');
   }

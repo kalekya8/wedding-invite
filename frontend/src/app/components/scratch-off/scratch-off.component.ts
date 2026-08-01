@@ -57,13 +57,13 @@ import { ConfettiService } from '../../services/confetti.service';
       width: 100%;
       max-width: 600px;
       margin: 0 auto;
-      padding: 0 5%;
+      padding: 0 10%;
     }
 
     .location-info {
       text-align: center;
       margin-bottom: 30px;
-      padding: 0 5%;
+      padding: 0 10%;
     }
 
     @media (max-width: 768px) {

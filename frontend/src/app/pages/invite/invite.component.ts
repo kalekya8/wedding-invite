@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { RsvpComponent } from '../../components/sections/rsvp/rsvp.component';
+import { ScratchOffComponent } from '../../components/scratch-off/scratch-off.component';
 import { AudioService } from '../../services/audio.service';
 
 @Component({
   selector: 'app-invite',
   standalone: true,
-  imports: [CommonModule, FormsModule, RsvpComponent],
+  imports: [CommonModule, FormsModule, RsvpComponent, ScratchOffComponent],
   templateUrl: './invite.component.html',
   styleUrl: './invite.component.scss',
   animations: [

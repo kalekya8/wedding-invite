@@ -1,9 +1,6 @@
-import { Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { AudioService } from '../../services/audio.service';
-import { MusicNotesService } from '../../services/music-notes.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -20,16 +17,6 @@ import { Subscription } from 'rxjs';
           <li><a href="#travel" (click)="scrollTo('travel')">Travel</a></li>
           <li><a href="#rsvp" (click)="scrollTo('rsvp')">RSVP</a></li>
         </ul>
-
-        <button #audioButton
-                class="audio-button"
-                (click)="toggleAudio()"
-                [class.muted]="isMuted$ | async"
-                [class.playing]="!(isMuted$ | async)"
-                [title]="(isMuted$ | async) ? 'Music Muted' : 'Music Playing'"
-                [@fadeIn]>
-          <span class="audio-icon">♪</span>
-        </button>
       </div>
     </nav>
   `,
@@ -101,63 +88,6 @@ import { Subscription } from 'rxjs';
       }
     }
 
-    .audio-button {
-      background: transparent;
-      border: 2px solid #d4af37;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      padding: 0;
-      min-width: 40px;
-      position: relative;
-
-      .audio-icon {
-        font-size: 20px;
-        color: #7a9d5d;
-        display: block;
-        line-height: 1;
-      }
-
-      &:hover {
-        background: rgba(122, 157, 93, 0.1);
-        border-color: #7a9d5d;
-        transform: scale(1.1);
-      }
-
-      &.playing {
-        box-shadow: 0 0 12px rgba(200, 162, 74, 0.4);
-
-        .audio-icon {
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-      }
-
-      &.muted {
-        opacity: 0.6;
-
-        .audio-icon {
-          animation: none;
-        }
-
-        &:hover {
-          opacity: 1;
-        }
-      }
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.6;
-      }
-    }
 
     @media (max-width: 768px) {
       .navbar-content {
@@ -171,14 +101,6 @@ import { Subscription } from 'rxjs';
         font-size: 12px;
       }
 
-      .audio-button {
-        width: 36px;
-        height: 36px;
-
-        .audio-icon {
-          font-size: 18px;
-        }
-      }
     }
   `],
   animations: [
@@ -187,47 +109,11 @@ import { Subscription } from 'rxjs';
         style({ transform: 'translateY(-100%)', opacity: 0 }),
         animate('600ms 400ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'translateY(0)', opacity: 1 }))
       ])
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('600ms 400ms ease-in', style({ opacity: 1 }))
-      ])
     ])
   ]
 })
-export class NavbarComponent implements OnInit, OnDestroy {
-  @ViewChild('audioButton') audioButton?: ElementRef;
-
-  isMuted$ = this.audioService.isMuted;
-  private subscriptions: Subscription[] = [];
-  private isMutedValue = false;
-
-  constructor(private audioService: AudioService, private musicNotesService: MusicNotesService) {}
-
-  ngOnInit() {
-    // Subscribe to muted state
-    const sub = this.isMuted$.subscribe(muted => {
-      this.isMutedValue = muted;
-
-      // Control music notes based on mute state
-      if (muted) {
-        this.musicNotesService.stopPlaying();
-      } else if (this.audioButton) {
-        this.musicNotesService.startPlaying(this.audioButton.nativeElement);
-      }
-    });
-    this.subscriptions.push(sub);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.musicNotesService.destroy();
-  }
-
-  toggleAudio() {
-    this.audioService.toggleAudio();
-  }
+export class NavbarComponent {
+  constructor() {}
 
   scrollTo(section: string) {
     event?.preventDefault();

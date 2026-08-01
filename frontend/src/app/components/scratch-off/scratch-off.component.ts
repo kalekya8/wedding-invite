@@ -51,7 +51,7 @@ import { ConfettiService } from '../../services/confetti.service';
     .scratch-container {
       position: relative;
       width: 600px;
-      height: 300px;
+      height: 500px;
       max-width: 100%;
       margin: 0 auto;
       border-radius: 12px;
@@ -259,7 +259,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     console.log(`[${new Date().getTime()}] 🎫 Canvas clientWidth: ${canvas.clientWidth}, clientHeight: ${canvas.clientHeight}`);
 
     let width = canvas.offsetWidth || container?.offsetWidth || 600;
-    let height = canvas.offsetHeight || container?.offsetHeight || 300;
+    let height = canvas.offsetHeight || container?.offsetHeight || 500;
 
     console.log(`[${new Date().getTime()}] 🎫 Using dimensions - width: ${width}, height: ${height}`);
 

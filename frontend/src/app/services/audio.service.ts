@@ -176,6 +176,11 @@ export class AudioService {
     this.audio.volume = Math.max(0, Math.min(1, volume));
   }
 
+  forceUnmute() {
+    console.log(`[${new Date().getTime()}] 🔊 forceUnmute() - ensuring audio is not muted`);
+    this.isMuted$.next(false);
+  }
+
   destroy() {
     if (this.audio) {
       this.audio.pause();

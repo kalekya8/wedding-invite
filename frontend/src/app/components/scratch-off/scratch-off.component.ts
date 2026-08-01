@@ -271,7 +271,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     canvas.width = width;
     canvas.height = height;
 
-    this.ctx = canvas.getContext('2d');
+    this.ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!this.ctx) return;
 
     this.ctx.fillStyle = '#9CA88C';
@@ -348,11 +348,11 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
 
     const canvas = this.canvasRef?.nativeElement;
     if (canvas) {
-      canvas.style.display = 'none';
-
       const rect = canvas.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
+
+      canvas.style.display = 'none';
       this.confettiService.burst(centerX, centerY, 3000);
     }
   }

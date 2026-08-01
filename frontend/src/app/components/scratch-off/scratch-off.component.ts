@@ -242,6 +242,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
 
     const canvas = this.canvasRef?.nativeElement;
     console.log(`[${new Date().getTime()}] 🎫 Canvas element:`, canvas);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas parent:`, canvas?.parentElement);
 
     if (!canvas) {
       console.error(`[${new Date().getTime()}] ❌ Canvas element not found`);
@@ -249,9 +250,15 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     }
 
     console.log(`[${new Date().getTime()}] 🎫 Canvas offsetWidth: ${canvas.offsetWidth}, offsetHeight: ${canvas.offsetHeight}`);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas clientWidth: ${canvas.clientWidth}, clientHeight: ${canvas.clientHeight}`);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas getComputedStyle:`, window.getComputedStyle(canvas));
 
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) {
+      console.error(`[${new Date().getTime()}] ❌ Canvas has zero dimensions! offsetWidth: ${canvas.offsetWidth}, offsetHeight: ${canvas.offsetHeight}`);
+    }
+
+    canvas.width = canvas.offsetWidth || 600;
+    canvas.height = canvas.offsetHeight || 300;
 
     console.log(`[${new Date().getTime()}] 🎫 Canvas width set to: ${canvas.width}, height: ${canvas.height}`);
 
@@ -274,6 +281,10 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(text, canvas.width / 2, canvas.height / 2);
     console.log(`[${new Date().getTime()}] 🎫 Canvas initialized with text and background`);
+
+    console.log(`[${new Date().getTime()}] 🎫 Canvas style display:`, canvas.style.display);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas style visibility:`, canvas.style.visibility);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas z-index:`, canvas.style.zIndex);
   }
 
   onMouseDown() {

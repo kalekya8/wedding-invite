@@ -57,12 +57,13 @@ import { ConfettiService } from '../../services/confetti.service';
       width: 100%;
       max-width: 600px;
       margin: 0 auto;
+      padding: 0 5%;
     }
 
     .location-info {
       text-align: center;
       margin-bottom: 30px;
-      padding: 0 20px;
+      padding: 0 5%;
     }
 
     .location-info .wedding-venue {

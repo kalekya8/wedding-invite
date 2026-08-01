@@ -50,9 +50,9 @@ import { ConfettiService } from '../../services/confetti.service';
   styles: [`
     .scratch-container {
       position: relative;
-      width: 100%;
-      max-width: 600px;
+      width: 600px;
       height: 300px;
+      max-width: 100%;
       margin: 0 auto;
       border-radius: 12px;
       overflow: hidden;
@@ -401,8 +401,6 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
       this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      console.log(`[${new Date().getTime()}] ⏱️ Countdown: ${this.days}d ${this.hours}h ${this.minutes}m ${this.seconds}s`);
     };
 
     updateCountdown();

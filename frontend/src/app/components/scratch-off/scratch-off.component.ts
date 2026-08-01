@@ -226,6 +226,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   constructor(private confettiService: ConfettiService) {}
 
   ngOnInit() {
+    console.log(`[${new Date().getTime()}] 🎫 ScratchOffComponent ngOnInit`);
     setTimeout(() => this.initializeScratchCanvas(), 100);
     this.startCountdown();
   }
@@ -237,17 +238,34 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   }
 
   private initializeScratchCanvas() {
+    console.log(`[${new Date().getTime()}] 🎫 Initializing scratch canvas`);
+
     const canvas = this.canvasRef?.nativeElement;
-    if (!canvas) return;
+    console.log(`[${new Date().getTime()}] 🎫 Canvas element:`, canvas);
+
+    if (!canvas) {
+      console.error(`[${new Date().getTime()}] ❌ Canvas element not found`);
+      return;
+    }
+
+    console.log(`[${new Date().getTime()}] 🎫 Canvas offsetWidth: ${canvas.offsetWidth}, offsetHeight: ${canvas.offsetHeight}`);
 
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
+    console.log(`[${new Date().getTime()}] 🎫 Canvas width set to: ${canvas.width}, height: ${canvas.height}`);
+
     this.ctx = canvas.getContext('2d');
-    if (!this.ctx) return;
+    console.log(`[${new Date().getTime()}] 🎫 Canvas 2D context:`, this.ctx);
+
+    if (!this.ctx) {
+      console.error(`[${new Date().getTime()}] ❌ Could not get 2D context`);
+      return;
+    }
 
     this.ctx.fillStyle = '#9CA88C';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+    console.log(`[${new Date().getTime()}] 🎫 Filled canvas with sage green background`);
 
     const text = 'Scratch to reveal';
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
@@ -255,13 +273,16 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas initialized with text and background`);
   }
 
   onMouseDown() {
+    console.log(`[${new Date().getTime()}] 🖱️ Mouse down`);
     this.isDrawing = true;
   }
 
   onMouseUp() {
+    console.log(`[${new Date().getTime()}] 🖱️ Mouse up`);
     this.isDrawing = false;
   }
 
@@ -271,10 +292,12 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   }
 
   onTouchStart(event: TouchEvent) {
+    console.log(`[${new Date().getTime()}] 👆 Touch start`);
     this.isDrawing = true;
   }
 
   onTouchEnd() {
+    console.log(`[${new Date().getTime()}] 👆 Touch end`);
     this.isDrawing = false;
   }
 
@@ -285,12 +308,19 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   }
 
   private scratch(clientX: number, clientY: number) {
+    console.log(`[${new Date().getTime()}] ✏️ Scratching at (${clientX}, ${clientY})`);
+
     const canvas = this.canvasRef?.nativeElement;
-    if (!canvas || !this.ctx) return;
+    if (!canvas || !this.ctx) {
+      console.error(`[${new Date().getTime()}] ❌ Canvas or context not available`);
+      return;
+    }
 
     const rect = canvas.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
+
+    console.log(`[${new Date().getTime()}] ✏️ Clearing rect at (${x}, ${y}), size 40x40`);
 
     this.ctx.clearRect(x - 20, y - 20, 40, 40);
 
@@ -310,16 +340,21 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     }
 
     const percentage = transparent / (data.length / 4);
+    console.log(`[${new Date().getTime()}] 📊 Transparent pixels: ${percentage.toFixed(2)}% (threshold: ${this.revealThreshold * 100}%)`);
 
     if (percentage > this.revealThreshold && !this.isRevealed) {
+      console.log(`[${new Date().getTime()}] 🎉 Reveal threshold reached!`);
       this.reveal();
     }
   }
 
   private reveal() {
+    console.log(`[${new Date().getTime()}] 🎫 REVEALING! Setting isRevealed to true`);
     this.isRevealed = true;
+
     const canvas = this.canvasRef?.nativeElement;
     if (canvas) {
+      console.log(`[${new Date().getTime()}] 🎫 Hiding canvas`);
       canvas.style.display = 'none';
     }
 
@@ -327,12 +362,15 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     if (rect) {
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
+      console.log(`[${new Date().getTime()}] 🎉 Triggering confetti at (${centerX}, ${centerY})`);
       this.confettiService.burst(centerX, centerY, 3000);
     }
   }
 
   private startCountdown() {
+    console.log(`[${new Date().getTime()}] ⏱️ Starting countdown`);
     const weddingDate = new Date('2026-08-27T11:07:00').getTime();
+    console.log(`[${new Date().getTime()}] ⏱️ Wedding date timestamp: ${weddingDate}`);
 
     const updateCountdown = () => {
       const now = new Date().getTime();
@@ -350,6 +388,8 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
       this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      console.log(`[${new Date().getTime()}] ⏱️ Countdown: ${this.days}d ${this.hours}h ${this.minutes}m ${this.seconds}s`);
     };
 
     updateCountdown();

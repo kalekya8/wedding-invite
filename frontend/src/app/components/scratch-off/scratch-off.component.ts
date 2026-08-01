@@ -8,38 +8,44 @@ import { ConfettiService } from '../../services/confetti.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="scratch-container">
-      <canvas #scratchCanvas
-              class="scratch-canvas"
-              (mousemove)="onMouseMove($event)"
-              (mousedown)="onMouseDown()"
-              (mouseup)="onMouseUp()"
-              (mouseleave)="onMouseUp()"
-              (touchstart)="onTouchStart($event)"
-              (touchmove)="onTouchMove($event)"
-              (touchend)="onTouchEnd()"></canvas>
+    <div class="scratch-wrapper">
+      <div class="location-info">
+        <p class="wedding-venue">Harpers by Bailey Farms, Iowa</p>
+      </div>
 
-      <div class="scratch-content">
-        <p class="scratch-label" *ngIf="!isRevealed">Scratch to reveal</p>
-        <div *ngIf="isRevealed" class="revealed-content" [@fadeIn]>
-          <p class="wedding-date">27th August 2026</p>
-          <p class="wedding-time">11:07 AM</p>
-          <div class="countdown">
-            <div class="countdown-item">
-              <span class="countdown-value">{{ days }}</span>
-              <span class="countdown-label">days</span>
-            </div>
-            <div class="countdown-item">
-              <span class="countdown-value">{{ hours }}</span>
-              <span class="countdown-label">hours</span>
-            </div>
-            <div class="countdown-item">
-              <span class="countdown-value">{{ minutes }}</span>
-              <span class="countdown-label">mins</span>
-            </div>
-            <div class="countdown-item">
-              <span class="countdown-value">{{ seconds }}</span>
-              <span class="countdown-label">secs</span>
+      <div class="scratch-container">
+        <canvas #scratchCanvas
+                class="scratch-canvas"
+                (mousemove)="onMouseMove($event)"
+                (mousedown)="onMouseDown()"
+                (mouseup)="onMouseUp()"
+                (mouseleave)="onMouseUp()"
+                (touchstart)="onTouchStart($event)"
+                (touchmove)="onTouchMove($event)"
+                (touchend)="onTouchEnd()"></canvas>
+
+        <div class="scratch-content">
+          <p class="scratch-label" *ngIf="!isRevealed">Scratch to reveal</p>
+          <div *ngIf="isRevealed" class="revealed-content" [@fadeIn]>
+            <p class="wedding-date">27th August 2026</p>
+            <p class="wedding-time">11:07 AM</p>
+            <div class="countdown">
+              <div class="countdown-item">
+                <span class="countdown-value">{{ days }}</span>
+                <span class="countdown-label">days</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-value">{{ hours }}</span>
+                <span class="countdown-label">hours</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-value">{{ minutes }}</span>
+                <span class="countdown-label">mins</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-value">{{ seconds }}</span>
+                <span class="countdown-label">secs</span>
+              </div>
             </div>
           </div>
         </div>
@@ -47,6 +53,26 @@ import { ConfettiService } from '../../services/confetti.service';
     </div>
   `,
   styles: [`
+    .scratch-wrapper {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .location-info {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+
+    .location-info .wedding-venue {
+      font-size: 22px;
+      color: #7a9d5d;
+      margin: 0;
+      font-family: 'Georgia', serif;
+      font-weight: 300;
+    }
+
     .scratch-container {
       position: relative;
       width: 600px;
@@ -107,19 +133,15 @@ import { ConfettiService } from '../../services/confetti.service';
       font-size: 48px;
       font-family: 'Georgia', serif;
       margin: 0;
-      color: #FFFDF7;
+      color: #7a9d5d;
       font-weight: 400;
     }
 
     .wedding-time {
       font-size: 24px;
       margin: 0;
-      color: #F7F2E8;
+      color: #9AA68A;
       font-weight: 300;
-    }
-
-    .wedding-venue {
-      display: none;
     }
 
     .countdown {
@@ -149,7 +171,7 @@ import { ConfettiService } from '../../services/confetti.service';
 
     .countdown-label {
       font-size: 12px;
-      color: #F7F2E8;
+      color: #7a9d5d;
       margin-top: 4px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -227,7 +249,6 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   constructor(private confettiService: ConfettiService) {}
 
   ngOnInit() {
-    console.log(`[${new Date().getTime()}] 🎫 ScratchOffComponent ngOnInit`);
     setTimeout(() => this.initializeScratchCanvas(), 100);
     this.startCountdown();
   }
@@ -239,44 +260,21 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   }
 
   private initializeScratchCanvas() {
-    console.log(`[${new Date().getTime()}] 🎫 Initializing scratch canvas`);
-
     const canvas = this.canvasRef?.nativeElement;
-    console.log(`[${new Date().getTime()}] 🎫 Canvas element:`, canvas);
-
-    if (!canvas) {
-      console.error(`[${new Date().getTime()}] ❌ Canvas element not found`);
-      return;
-    }
+    if (!canvas) return;
 
     const container = canvas.parentElement?.parentElement;
-    console.log(`[${new Date().getTime()}] 🎫 Container element:`, container);
-    console.log(`[${new Date().getTime()}] 🎫 Container offsetWidth: ${container?.offsetWidth}, offsetHeight: ${container?.offsetHeight}`);
-
-    console.log(`[${new Date().getTime()}] 🎫 Canvas offsetWidth: ${canvas.offsetWidth}, offsetHeight: ${canvas.offsetHeight}`);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas clientWidth: ${canvas.clientWidth}, clientHeight: ${canvas.clientHeight}`);
-
     let width = canvas.offsetWidth || container?.offsetWidth || 600;
     let height = canvas.offsetHeight || container?.offsetHeight || 500;
-
-    console.log(`[${new Date().getTime()}] 🎫 Using dimensions - width: ${width}, height: ${height}`);
 
     canvas.width = width;
     canvas.height = height;
 
-    console.log(`[${new Date().getTime()}] 🎫 Canvas width set to: ${canvas.width}, height: ${canvas.height}`);
-
     this.ctx = canvas.getContext('2d');
-    console.log(`[${new Date().getTime()}] 🎫 Canvas 2D context obtained:`, !!this.ctx);
-
-    if (!this.ctx) {
-      console.error(`[${new Date().getTime()}] ❌ Could not get 2D context`);
-      return;
-    }
+    if (!this.ctx) return;
 
     this.ctx.fillStyle = '#9CA88C';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
-    console.log(`[${new Date().getTime()}] 🎫 Filled canvas with sage green (#9CA88C) - dimensions: ${canvas.width}x${canvas.height}`);
 
     const text = 'Scratch to reveal';
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
@@ -284,16 +282,13 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas text added at center (${canvas.width / 2}, ${canvas.height / 2})`);
   }
 
   onMouseDown() {
-    console.log(`[${new Date().getTime()}] 🖱️ Mouse down`);
     this.isDrawing = true;
   }
 
   onMouseUp() {
-    console.log(`[${new Date().getTime()}] 🖱️ Mouse up`);
     this.isDrawing = false;
   }
 
@@ -303,12 +298,10 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   }
 
   onTouchStart(event: TouchEvent) {
-    console.log(`[${new Date().getTime()}] 👆 Touch start`);
     this.isDrawing = true;
   }
 
   onTouchEnd() {
-    console.log(`[${new Date().getTime()}] 👆 Touch end`);
     this.isDrawing = false;
   }
 
@@ -319,22 +312,14 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   }
 
   private scratch(clientX: number, clientY: number) {
-    console.log(`[${new Date().getTime()}] ✏️ Scratching at (${clientX}, ${clientY})`);
-
     const canvas = this.canvasRef?.nativeElement;
-    if (!canvas || !this.ctx) {
-      console.error(`[${new Date().getTime()}] ❌ Canvas or context not available`);
-      return;
-    }
+    if (!canvas || !this.ctx) return;
 
     const rect = canvas.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
-    console.log(`[${new Date().getTime()}] ✏️ Clearing rect at (${x}, ${y}), size 40x40`);
-
     this.ctx.clearRect(x - 20, y - 20, 40, 40);
-
     this.checkReveal();
   }
 
@@ -351,35 +336,28 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     }
 
     const percentage = transparent / (data.length / 4);
-    console.log(`[${new Date().getTime()}] 📊 Transparent pixels: ${percentage.toFixed(2)}% (threshold: ${this.revealThreshold * 100}%)`);
 
     if (percentage > this.revealThreshold && !this.isRevealed) {
-      console.log(`[${new Date().getTime()}] 🎉 Reveal threshold reached!`);
       this.reveal();
     }
   }
 
   private reveal() {
-    console.log(`[${new Date().getTime()}] 🎫 REVEALING! Setting isRevealed to true`);
     this.isRevealed = true;
 
     const canvas = this.canvasRef?.nativeElement;
     if (canvas) {
-      console.log(`[${new Date().getTime()}] 🎫 Hiding canvas`);
       canvas.style.display = 'none';
 
       const rect = canvas.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      console.log(`[${new Date().getTime()}] 🎉 Triggering confetti at scratch center (${centerX}, ${centerY})`);
       this.confettiService.burst(centerX, centerY, 3000);
     }
   }
 
   private startCountdown() {
-    console.log(`[${new Date().getTime()}] ⏱️ Starting countdown`);
     const weddingDate = new Date('2026-08-27T11:07:00').getTime();
-    console.log(`[${new Date().getTime()}] ⏱️ Wedding date timestamp: ${weddingDate}`);
 
     const updateCountdown = () => {
       const now = new Date().getTime();

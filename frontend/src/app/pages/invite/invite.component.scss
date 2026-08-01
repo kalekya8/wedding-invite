@@ -116,17 +116,15 @@ body {
   margin-right: auto;
 }
 
-.music-btn-floating {
+.invite-audio-button {
   position: fixed;
-  bottom: 80px;
-  right: 40px;
-  width: 45px;
-  height: 45px;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: #7a9d5d;
   border: 2px solid #d4af37;
-  color: white;
-  font-size: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(122, 157, 93, 0.4);
@@ -134,12 +132,42 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 100;
+  padding: 0;
+
+  .audio-icon {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  &.playing {
+    box-shadow: 0 0 15px rgba(200, 162, 74, 0.6);
+
+    .audio-icon {
+      animation: pulse-icon 1.5s ease-in-out infinite;
+    }
+  }
+
+  &.muted {
+    opacity: 0.7;
+
+    .audio-icon {
+      animation: none;
+    }
+  }
 
   &:hover {
     background: #d4af37;
-    color: #7a9d5d;
     transform: scale(1.1);
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+  }
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
   }
 }
 

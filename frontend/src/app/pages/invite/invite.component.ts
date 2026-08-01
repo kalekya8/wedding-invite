@@ -1,8 +1,9 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { RsvpComponent } from '../../components/sections/rsvp/rsvp.component';
+import { AudioService } from '../../services/audio.service';
 
 @Component({
   selector: 'app-invite',
@@ -61,11 +62,10 @@ import { RsvpComponent } from '../../components/sections/rsvp/rsvp.component';
     ])
   ]
 })
-export class InviteComponent implements OnInit, AfterViewInit {
-  constructor() {}
+export class InviteComponent implements OnInit, AfterViewInit, OnDestroy {
+  isInviteAudioPlaying$ = this.audioService.isPlaying;
 
-  isPlaying = false;
-  audioPlayer: HTMLAudioElement | null = null;
+  constructor(private audioService: AudioService) {}
 
   events = [
     {
@@ -106,26 +106,18 @@ export class InviteComponent implements OnInit, AfterViewInit {
   ];
 
   ngOnInit() {
+    this.audioService.play();
   }
 
   ngAfterViewInit() {
-    const audio = document.querySelector('audio') as HTMLAudioElement;
-    if (audio) {
-      this.audioPlayer = audio;
-      audio.loop = true;
-      audio.volume = 0.5;
-    }
   }
 
-  toggleMusic() {
-    if (!this.audioPlayer) return;
+  ngOnDestroy() {
+    this.audioService.pause();
+  }
 
-    if (this.isPlaying) {
-      this.audioPlayer.pause();
-    } else {
-      this.audioPlayer.play();
-    }
-    this.isPlaying = !this.isPlaying;
+  toggleInviteAudio() {
+    this.audioService.toggleAudio();
   }
 
 }

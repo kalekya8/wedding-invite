@@ -47,7 +47,7 @@ body {
     content: '';
     position: fixed;
     top: 0;
-    left: 0;
+    left: 10px;
     width: 3px;
     height: 100%;
     background: linear-gradient(180deg, #d4af37 0%, #d4af37 50%, transparent 100%);
@@ -60,7 +60,7 @@ body {
     content: '';
     position: fixed;
     top: 0;
-    right: 0;
+    right: 10px;
     width: 3px;
     height: 100%;
     background: linear-gradient(180deg, #d4af37 0%, #d4af37 50%, transparent 100%);

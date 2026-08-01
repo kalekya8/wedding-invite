@@ -107,7 +107,6 @@ export class InviteComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   ngOnInit() {
-    console.log(`[${new Date().getTime()}] 📄 InviteComponent ngOnInit - ensuring audio is playing`);
     this.audioService.forceUnmute();
     this.audioService.play();
   }

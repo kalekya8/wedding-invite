@@ -369,13 +369,11 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     if (canvas) {
       console.log(`[${new Date().getTime()}] 🎫 Hiding canvas`);
       canvas.style.display = 'none';
-    }
 
-    const rect = canvas?.getBoundingClientRect();
-    if (rect) {
+      const rect = canvas.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      console.log(`[${new Date().getTime()}] 🎉 Triggering confetti at (${centerX}, ${centerY})`);
+      console.log(`[${new Date().getTime()}] 🎉 Triggering confetti at scratch center (${centerX}, ${centerY})`);
       this.confettiService.burst(centerX, centerY, 3000);
     }
   }

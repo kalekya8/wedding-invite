@@ -99,7 +99,6 @@ export class ConfettiService {
   }
 
   private createParticles(centerX: number, centerY: number, count: number) {
-    console.log(`[${new Date().getTime()}] 🎨 Creating ${count} particles from (${centerX}, ${centerY})`);
     this.particles = [];
 
     for (let i = 0; i < count; i++) {
@@ -124,14 +123,7 @@ export class ConfettiService {
       };
 
       this.particles.push(particle);
-
-      if (i < 3) {
-        const direction = vy > 0 ? 'DOWN' : 'UP';
-        const horizontalDir = vx > 0 ? 'RIGHT' : 'LEFT';
-        console.log(`[${new Date().getTime()}] 🎨 Particle ${i}: ${type} - velocity: (${vx.toFixed(2)}, ${vy.toFixed(2)}) - direction: ${horizontalDir} ${direction}`);
-      }
     }
-    console.log(`[${new Date().getTime()}] 🎨 All ${count} particles created`);
   }
 
   private updateParticles(elapsed: number) {
@@ -215,7 +207,6 @@ export class ConfettiService {
 
     if (this.startTime === 0) {
       this.startTime = currentTime;
-      console.log(`[${new Date().getTime()}] 🎉 Animation started at ${this.startTime}`);
     }
 
     const elapsed = currentTime - this.startTime;
@@ -228,7 +219,6 @@ export class ConfettiService {
     if (elapsed < this.duration) {
       this.animationId = requestAnimationFrame(this.animate);
     } else {
-      console.log(`[${new Date().getTime()}] 🎉 Animation completed after ${elapsed}ms`);
       this.isRunning = false;
       this.startTime = 0;
       this.particles = [];
@@ -236,11 +226,7 @@ export class ConfettiService {
   };
 
   burst(centerX: number, centerY: number, duration: number = 3000) {
-    console.log(`[${new Date().getTime()}] 🎉 Confetti burst() called`);
-    console.log(`[${new Date().getTime()}] 🎉 Burst center: (${centerX}, ${centerY}), duration: ${duration}ms`);
-
     if (this.isRunning) {
-      console.log(`[${new Date().getTime()}] 🎉 Confetti already running, skipping`);
       return;
     }
 
@@ -249,14 +235,12 @@ export class ConfettiService {
     this.startTime = 0;
 
     const particleCount = this.getParticleCount();
-    console.log(`[${new Date().getTime()}] 🎉 Creating ${particleCount} particles`);
     this.createParticles(centerX, centerY, particleCount);
 
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
     }
 
-    console.log(`[${new Date().getTime()}] 🎉 Requesting animation frame for confetti`);
     this.animationId = requestAnimationFrame(this.animate);
   }
 

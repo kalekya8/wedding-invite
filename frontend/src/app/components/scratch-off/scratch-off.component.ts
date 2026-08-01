@@ -60,10 +60,23 @@ import { ConfettiService } from '../../services/confetti.service';
       padding: 0 15px;
     }
 
+    @media (max-width: 768px) {
+      .scratch-wrapper {
+        padding: 0 20px;
+      }
+    }
+
     .location-info {
       text-align: center;
       margin-bottom: 30px;
       padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+      .location-info {
+        margin-bottom: 40px;
+        padding: 0 10px;
+      }
     }
 
     .location-info .wedding-venue {
@@ -81,9 +94,16 @@ import { ConfettiService } from '../../services/confetti.service';
       height: 250px;
       max-width: 100%;
       margin: 0 auto;
+      margin-bottom: 40px;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .scratch-container {
+        margin-bottom: 60px;
+      }
     }
 
     .scratch-canvas {

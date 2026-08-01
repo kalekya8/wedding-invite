@@ -66,6 +66,13 @@ import { ConfettiService } from '../../services/confetti.service';
       padding: 0 5%;
     }
 
+    @media (max-width: 768px) {
+      .location-info {
+        margin-bottom: 40px;
+        padding: 0 10px;
+      }
+    }
+
     .location-info .wedding-venue {
       font-size: 28px;
       color: #7a9d5d;
@@ -79,11 +86,25 @@ import { ConfettiService } from '../../services/confetti.service';
       position: relative;
       width: 400px;
       height: 250px;
-      max-width: 100%;
+      max-width: calc(100% - 40px);
       margin: 0 auto;
+      margin-top: 30px;
+      margin-bottom: 40px;
+      margin-left: 20px;
+      margin-right: 20px;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .scratch-container {
+        max-width: calc(100% - 60px);
+        margin-left: 30px;
+        margin-right: 30px;
+        margin-top: 40px;
+        margin-bottom: 80px;
+      }
     }
 
     .scratch-canvas {

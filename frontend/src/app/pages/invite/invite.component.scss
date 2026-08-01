@@ -6,6 +6,10 @@
   overflow-x: hidden;
   padding: 0;
   margin: 0;
+
+  @media (max-width: 768px) {
+    padding: 0 15px;
+  }
 }
 
 body {
@@ -516,6 +520,12 @@ body {
   .bride-name,
   .groom-name {
     font-size: 40px;
+  }
+
+  .events-section,
+  .travel-section,
+  .rsvp-section {
+    padding: 60px 20px;
   }
 
   .countdown-section h2,

@@ -66,17 +66,18 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .location-info .wedding-venue {
-      font-size: 22px;
+      font-size: 28px;
       color: #7a9d5d;
       margin: 0;
       font-family: 'Georgia', serif;
       font-weight: 300;
+      letter-spacing: 0.5px;
     }
 
     .scratch-container {
       position: relative;
-      width: 600px;
-      height: 500px;
+      width: 500px;
+      height: 350px;
       max-width: 100%;
       margin: 0 auto;
       border-radius: 12px;
@@ -130,7 +131,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .wedding-date {
-      font-size: 48px;
+      font-size: 40px;
       font-family: 'Georgia', serif;
       margin: 0;
       color: #7a9d5d;
@@ -138,7 +139,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .wedding-time {
-      font-size: 24px;
+      font-size: 20px;
       margin: 0;
       color: #9AA68A;
       font-weight: 300;
@@ -264,8 +265,8 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     if (!canvas) return;
 
     const container = canvas.parentElement?.parentElement;
-    let width = canvas.offsetWidth || container?.offsetWidth || 600;
-    let height = canvas.offsetHeight || container?.offsetHeight || 500;
+    let width = canvas.offsetWidth || container?.offsetWidth || 500;
+    let height = canvas.offsetHeight || container?.offsetHeight || 350;
 
     canvas.width = width;
     canvas.height = height;

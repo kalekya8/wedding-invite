@@ -24,7 +24,6 @@ import { ConfettiService } from '../../services/confetti.service';
         <div *ngIf="isRevealed" class="revealed-content" [@fadeIn]>
           <p class="wedding-date">27th August 2026</p>
           <p class="wedding-time">11:07 AM</p>
-          <p class="wedding-venue">Harpers by Bailey Farms, Iowa</p>
           <div class="countdown">
             <div class="countdown-item">
               <span class="countdown-value">{{ days }}</span>
@@ -80,7 +79,6 @@ import { ConfettiService } from '../../services/confetti.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #9CA88C 0%, #8A9678 100%);
       text-align: center;
       padding: 40px 20px;
       color: white;
@@ -93,6 +91,7 @@ import { ConfettiService } from '../../services/confetti.service';
       margin: 0;
       opacity: 0.9;
       animation: pulse-text 2s ease-in-out infinite;
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .revealed-content {
@@ -101,6 +100,7 @@ import { ConfettiService } from '../../services/confetti.service';
       align-items: center;
       gap: 20px;
       width: 100%;
+      background: transparent;
     }
 
     .wedding-date {
@@ -119,9 +119,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .wedding-venue {
-      font-size: 16px;
-      margin: 0;
-      color: #E8E3D8;
+      display: none;
     }
 
     .countdown {

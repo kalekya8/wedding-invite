@@ -63,9 +63,12 @@ import { ConfettiService } from '../../services/confetti.service';
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       cursor: pointer;
       z-index: 10;
       touch-action: none;
+      display: block;
     }
 
     .scratch-content {
@@ -242,28 +245,31 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
 
     const canvas = this.canvasRef?.nativeElement;
     console.log(`[${new Date().getTime()}] 🎫 Canvas element:`, canvas);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas parent:`, canvas?.parentElement);
 
     if (!canvas) {
       console.error(`[${new Date().getTime()}] ❌ Canvas element not found`);
       return;
     }
 
+    const container = canvas.parentElement?.parentElement;
+    console.log(`[${new Date().getTime()}] 🎫 Container element:`, container);
+    console.log(`[${new Date().getTime()}] 🎫 Container offsetWidth: ${container?.offsetWidth}, offsetHeight: ${container?.offsetHeight}`);
+
     console.log(`[${new Date().getTime()}] 🎫 Canvas offsetWidth: ${canvas.offsetWidth}, offsetHeight: ${canvas.offsetHeight}`);
     console.log(`[${new Date().getTime()}] 🎫 Canvas clientWidth: ${canvas.clientWidth}, clientHeight: ${canvas.clientHeight}`);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas getComputedStyle:`, window.getComputedStyle(canvas));
 
-    if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) {
-      console.error(`[${new Date().getTime()}] ❌ Canvas has zero dimensions! offsetWidth: ${canvas.offsetWidth}, offsetHeight: ${canvas.offsetHeight}`);
-    }
+    let width = canvas.offsetWidth || container?.offsetWidth || 600;
+    let height = canvas.offsetHeight || container?.offsetHeight || 300;
 
-    canvas.width = canvas.offsetWidth || 600;
-    canvas.height = canvas.offsetHeight || 300;
+    console.log(`[${new Date().getTime()}] 🎫 Using dimensions - width: ${width}, height: ${height}`);
+
+    canvas.width = width;
+    canvas.height = height;
 
     console.log(`[${new Date().getTime()}] 🎫 Canvas width set to: ${canvas.width}, height: ${canvas.height}`);
 
     this.ctx = canvas.getContext('2d');
-    console.log(`[${new Date().getTime()}] 🎫 Canvas 2D context:`, this.ctx);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas 2D context obtained:`, !!this.ctx);
 
     if (!this.ctx) {
       console.error(`[${new Date().getTime()}] ❌ Could not get 2D context`);
@@ -272,7 +278,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
 
     this.ctx.fillStyle = '#9CA88C';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
-    console.log(`[${new Date().getTime()}] 🎫 Filled canvas with sage green background`);
+    console.log(`[${new Date().getTime()}] 🎫 Filled canvas with sage green (#9CA88C) - dimensions: ${canvas.width}x${canvas.height}`);
 
     const text = 'Scratch to reveal';
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
@@ -280,11 +286,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas initialized with text and background`);
-
-    console.log(`[${new Date().getTime()}] 🎫 Canvas style display:`, canvas.style.display);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas style visibility:`, canvas.style.visibility);
-    console.log(`[${new Date().getTime()}] 🎫 Canvas z-index:`, canvas.style.zIndex);
+    console.log(`[${new Date().getTime()}] 🎫 Canvas text added at center (${canvas.width / 2}, ${canvas.height / 2})`);
   }
 
   onMouseDown() {

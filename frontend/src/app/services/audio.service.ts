@@ -96,16 +96,7 @@ export class AudioService {
       console.error(`[${new Date().getTime()}] ❌ Audio error event:`, e);
     });
 
-    // Default: NOT muted on initialization
     this.isMuted$.next(false);
-
-    // Restore muted state from localStorage if available
-    const savedMutedState = localStorage.getItem('wedding_audio_muted');
-
-    if (savedMutedState !== null) {
-      const muted = JSON.parse(savedMutedState);
-      this.isMuted$.next(muted);
-    }
   }
 
   private setupUserInteractionListener() {

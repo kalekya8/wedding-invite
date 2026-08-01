@@ -25,16 +25,6 @@ export class AudioService {
     if (this.audio) {
       this.audio.load();
       console.log(`[${new Date().getTime()}] ⚡ Audio load() called for prefetch`);
-
-      this.audio.play()
-        .then(() => {
-          console.log(`[${new Date().getTime()}] ⚡ Prefetch play() succeeded - pausing immediately`);
-          this.audio?.pause();
-          this.audio!.currentTime = 0;
-        })
-        .catch(() => {
-          console.log(`[${new Date().getTime()}] ⚡ Prefetch play() failed (expected - autoplay policy)`);
-        });
     }
   }
 

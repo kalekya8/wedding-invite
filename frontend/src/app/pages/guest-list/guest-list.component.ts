@@ -562,7 +562,6 @@ export class GuestListComponent implements OnInit {
 
   fetchGuestList() {
     const url = `${this.apiUrl}/rsvps/list`;
-    console.log('Attempting to fetch guest list from:', url);
 
     this.http.get<{ success: boolean; events: EventGroupResponse[] }>(url).subscribe({
       next: (response) => {
@@ -575,13 +574,11 @@ export class GuestListComponent implements OnInit {
               createdAt: new Date().toISOString()
             }))
           );
-          console.log('Guest list fetched successfully:', this.guests.length, 'guests');
           this.updateStats();
           this.applyFilters();
         }
       },
       error: (error) => {
-        console.error('Error fetching guest list:', error);
         const errorMessage = error?.error?.message || error?.message || 'Failed to fetch guest list. Please try again.';
         this.error = errorMessage;
         this.isAuthenticated = false;

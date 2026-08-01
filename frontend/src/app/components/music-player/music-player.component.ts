@@ -82,10 +82,5 @@ export class MusicPlayerComponent {
 
   toggleMute() {
     this.isMuted = !this.isMuted;
-    if (this.isMuted) {
-      console.log('Music muted');
-    } else {
-      console.log('Music playing');
-    }
   }
 }

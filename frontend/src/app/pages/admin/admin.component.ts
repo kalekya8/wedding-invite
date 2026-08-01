@@ -507,8 +507,7 @@ export class AdminComponent implements OnInit {
       next: (response: any) => {
         this.events = response.events || [];
       },
-      error: (error) => {
-        console.error('Error fetching events:', error);
+      error: () => {
       }
     });
   }

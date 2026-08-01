@@ -29,23 +29,9 @@ import { ConfettiService } from '../../services/confetti.service';
           <div *ngIf="isRevealed" class="revealed-content" [@fadeIn]>
             <p class="wedding-date">27th August 2026</p>
             <p class="wedding-time">11:07 AM</p>
-            <div class="countdown">
-              <div class="countdown-item">
-                <span class="countdown-value">{{ days }}</span>
-                <span class="countdown-label">days</span>
-              </div>
-              <div class="countdown-item">
-                <span class="countdown-value">{{ hours }}</span>
-                <span class="countdown-label">hours</span>
-              </div>
-              <div class="countdown-item">
-                <span class="countdown-value">{{ minutes }}</span>
-                <span class="countdown-label">mins</span>
-              </div>
-              <div class="countdown-item">
-                <span class="countdown-value">{{ seconds }}</span>
-                <span class="countdown-label">secs</span>
-              </div>
+            <div class="venue-details">
+              <p class="venue-name">Harpers by Bailey Farms</p>
+              <p class="venue-address">3014 Scott St, New Virginia, IA 50210</p>
             </div>
           </div>
         </div>
@@ -167,37 +153,27 @@ import { ConfettiService } from '../../services/confetti.service';
       font-weight: 300;
     }
 
-    .countdown {
-      display: flex;
-      gap: 15px;
-      margin-top: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .countdown-item {
+    .venue-details {
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 12px 16px;
-      border-radius: 8px;
-      backdrop-filter: blur(10px);
-      min-width: 70px;
+      gap: 8px;
+      margin-top: 20px;
     }
 
-    .countdown-value {
-      font-size: 22px;
-      font-weight: 600;
-      color: #D4AF37;
-    }
-
-    .countdown-label {
-      font-size: 10px;
+    .venue-name {
+      font-size: 18px;
+      font-weight: 500;
       color: #7a9d5d;
-      margin-top: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      margin: 0;
+      font-family: 'Georgia', serif;
+    }
+
+    .venue-address {
+      font-size: 14px;
+      color: #9AA68A;
+      margin: 0;
+      font-family: 'Georgia', serif;
     }
 
     @keyframes pulse-text {
@@ -227,21 +203,16 @@ import { ConfettiService } from '../../services/confetti.service';
         font-size: 18px;
       }
 
-      .countdown {
-        gap: 10px;
+      .venue-details {
+        gap: 6px;
       }
 
-      .countdown-item {
-        min-width: 60px;
-        padding: 10px 12px;
+      .venue-name {
+        font-size: 16px;
       }
 
-      .countdown-value {
-        font-size: 20px;
-      }
-
-      .countdown-label {
-        font-size: 10px;
+      .venue-address {
+        font-size: 12px;
       }
     }
   `],
@@ -263,24 +234,13 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
   private revealThreshold = 0.3;
   private revealedPixels = 0;
 
-  days = 0;
-  hours = 0;
-  minutes = 0;
-  seconds = 0;
-  private countdownInterval: any;
-
   constructor(private confettiService: ConfettiService) {}
 
   ngOnInit() {
     setTimeout(() => this.initializeScratchCanvas(), 100);
-    this.startCountdown();
   }
 
-  ngOnDestroy() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-    }
-  }
+  ngOnDestroy() {}
 
   private initializeScratchCanvas() {
     const canvas = this.canvasRef?.nativeElement;
@@ -377,30 +337,5 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
       canvas.style.display = 'none';
       this.confettiService.burst(centerX, centerY, 3000);
     }
-  }
-
-  private startCountdown() {
-    const weddingDate = new Date('2026-08-27T11:07:00').getTime();
-
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const distance = weddingDate - now;
-
-      if (distance < 0) {
-        this.days = 0;
-        this.hours = 0;
-        this.minutes = 0;
-        this.seconds = 0;
-        return;
-      }
-
-      this.days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    };
-
-    updateCountdown();
-    this.countdownInterval = setInterval(updateCountdown, 1000);
   }
 }

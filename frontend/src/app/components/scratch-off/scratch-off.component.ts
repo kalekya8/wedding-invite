@@ -142,14 +142,14 @@ import { ConfettiService } from '../../services/confetti.service';
       font-size: 32px;
       font-family: 'Georgia', serif;
       margin: 0;
-      color: #7a9d5d;
+      color: #D4AF37;
       font-weight: 400;
     }
 
     .wedding-time {
       font-size: 16px;
       margin: 0;
-      color: #9AA68A;
+      color: #D4AF37;
       font-weight: 300;
     }
 

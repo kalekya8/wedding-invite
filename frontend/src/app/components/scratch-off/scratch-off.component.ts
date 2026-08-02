@@ -26,7 +26,7 @@ import { ConfettiService } from '../../services/confetti.service';
                 (touchend)="onTouchEnd()"></canvas>
 
         <div class="scratch-content">
-          <p class="scratch-label" *ngIf="!isRevealed">Scratch to reveal</p>
+          <p class="scratch-label" *ngIf="!isRevealed">Scratch</p>
           <div *ngIf="isRevealed" class="revealed-content" [@fadeIn]>
             <p class="wedding-date">27th August 2026</p>
             <p class="wedding-time">11:07 AM</p>
@@ -198,7 +198,7 @@ import { ConfettiService } from '../../services/confetti.service';
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
       .scratch-label {
         font-size: 20px;
       }

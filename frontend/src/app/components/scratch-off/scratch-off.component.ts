@@ -60,22 +60,23 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .location-info .wedding-venue {
-      font-size: 28px;
+      font-size: 22px;
       color: #7a9d5d;
       margin: 0;
       font-family: 'Georgia', serif;
       font-weight: 300;
       letter-spacing: 0.5px;
+      line-height: 1.3;
     }
 
     .scratch-container {
       position: relative;
-      width: 400px;
-      height: 220px;
+      width: 350px;
+      height: 180px;
       max-width: calc(100% - 40px);
       margin: 0 auto;
-      margin-top: 15px;
-      margin-bottom: 25px;
+      margin-top: 10px;
+      margin-bottom: 20px;
       margin-left: 20px;
       margin-right: 20px;
       border-radius: 12px;
@@ -88,9 +89,10 @@ import { ConfettiService } from '../../services/confetti.service';
         max-width: calc(100% - 60px);
         margin-left: 30px;
         margin-right: 30px;
-        margin-top: 15px;
-        margin-bottom: 30px;
-        height: 200px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        height: 170px;
+        width: 100%;
       }
     }
 

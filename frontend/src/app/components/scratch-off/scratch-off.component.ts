@@ -60,7 +60,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .location-info .wedding-venue {
-      font-size: 22px;
+      font-size: 28px;
       color: #7a9d5d;
       margin: 0;
       font-family: 'Georgia', serif;
@@ -71,12 +71,12 @@ import { ConfettiService } from '../../services/confetti.service';
 
     .scratch-container {
       position: relative;
-      width: 350px;
-      height: 180px;
+      width: 700px;
+      height: 360px;
       max-width: calc(100% - 40px);
       margin: 0 auto;
-      margin-top: 10px;
-      margin-bottom: 20px;
+      margin-top: 20px;
+      margin-bottom: 40px;
       margin-left: 20px;
       margin-right: 20px;
       border-radius: 12px;
@@ -89,9 +89,9 @@ import { ConfettiService } from '../../services/confetti.service';
         max-width: calc(100% - 60px);
         margin-left: 30px;
         margin-right: 30px;
-        margin-top: 10px;
-        margin-bottom: 20px;
-        height: 170px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+        height: 340px;
         width: 100%;
       }
     }
@@ -190,27 +190,27 @@ import { ConfettiService } from '../../services/confetti.service';
 
     @media (max-width: 768px) {
       .scratch-label {
-        font-size: 18px;
+        font-size: 24px;
       }
 
       .wedding-date {
-        font-size: 28px;
+        font-size: 36px;
       }
 
       .wedding-time {
-        font-size: 14px;
+        font-size: 16px;
       }
 
       .venue-details {
-        gap: 6px;
+        gap: 8px;
       }
 
       .venue-name {
-        font-size: 14px;
+        font-size: 18px;
       }
 
       .venue-address {
-        font-size: 11px;
+        font-size: 14px;
       }
     }
   `],

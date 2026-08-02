@@ -38,7 +38,6 @@ import { ConfettiService } from '../../services/confetti.service';
   styles: [`
     .scratch-wrapper {
       width: 100%;
-      max-width: 600px;
       margin: 0 auto;
       padding: 0 10%;
     }
@@ -70,22 +69,23 @@ import { ConfettiService } from '../../services/confetti.service';
       position: relative;
       width: 2000px;
       height: 300px;
-      max-width: calc(100% - 40px);
       margin: 0 auto;
       margin-top: 20px;
       margin-bottom: 40px;
-      margin-left: 20px;
-      margin-right: 20px;
+      margin-left: auto;
+      margin-right: auto;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     @media (max-width: 768px) {
       .scratch-container {
-        max-width: calc(100% - 60px);
-        margin-left: 30px;
-        margin-right: 30px;
+        margin-left: auto;
+        margin-right: auto;
         margin-top: 20px;
         margin-bottom: 40px;
         height: 240px;

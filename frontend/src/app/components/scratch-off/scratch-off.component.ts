@@ -10,7 +10,7 @@ import { ConfettiService } from '../../services/confetti.service';
   template: `
     <div class="scratch-wrapper">
       <div class="location-info">
-        <p class="wedding-venue">Harpers by Bailey Farms, Iowa</p>
+        <p class="wedding-venue">Harpers by Bailey Farms,<br>Iowa</p>
       </div>
 
       <div class="scratch-container">

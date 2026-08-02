@@ -13,6 +13,11 @@ import { ConfettiService } from '../../services/confetti.service';
         <p class="wedding-venue">Harpers by Bailey Farms,<br>Iowa</p>
       </div>
 
+      <div class="venue-address-info">
+        <p class="venue-name">Harpers by Bailey Farms</p>
+        <p class="venue-address">3014 Scott St, New Virginia, IA 50210</p>
+      </div>
+
       <div class="scratch-container">
         <canvas #scratchCanvas
                 class="scratch-canvas"
@@ -29,10 +34,6 @@ import { ConfettiService } from '../../services/confetti.service';
           <div *ngIf="isRevealed" class="revealed-content" [@fadeIn]>
             <p class="wedding-date">27th August 2026</p>
             <p class="wedding-time">11:07 AM</p>
-            <div class="venue-details">
-              <p class="venue-name">Harpers by Bailey Farms</p>
-              <p class="venue-address">3014 Scott St, New Virginia, IA 50210</p>
-            </div>
           </div>
         </div>
       </div>
@@ -71,8 +72,8 @@ import { ConfettiService } from '../../services/confetti.service';
 
     .scratch-container {
       position: relative;
-      width: 750px;
-      height: 360px;
+      width: 900px;
+      height: 280px;
       max-width: calc(100% - 40px);
       margin: 0 auto;
       margin-top: 20px;
@@ -91,7 +92,7 @@ import { ConfettiService } from '../../services/confetti.service';
         margin-right: 30px;
         margin-top: 20px;
         margin-bottom: 40px;
-        height: 340px;
+        height: 200px;
         width: 100%;
       }
     }
@@ -156,12 +157,10 @@ import { ConfettiService } from '../../services/confetti.service';
       font-weight: 300;
     }
 
-    .venue-details {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      margin-top: 20px;
+    .venue-address-info {
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 0 10%;
     }
 
     .venue-name {
@@ -175,8 +174,23 @@ import { ConfettiService } from '../../services/confetti.service';
     .venue-address {
       font-size: 14px;
       color: #9AA68A;
-      margin: 0;
+      margin: 5px 0 0 0;
       font-family: 'Georgia', serif;
+    }
+
+    @media (max-width: 768px) {
+      .venue-address-info {
+        margin-bottom: 15px;
+        padding: 0 10px;
+      }
+
+      .venue-name {
+        font-size: 16px;
+      }
+
+      .venue-address {
+        font-size: 12px;
+      }
     }
 
     @keyframes pulse-text {
@@ -190,26 +204,14 @@ import { ConfettiService } from '../../services/confetti.service';
 
     @media (max-width: 768px) {
       .scratch-label {
-        font-size: 24px;
+        font-size: 20px;
       }
 
       .wedding-date {
-        font-size: 36px;
+        font-size: 32px;
       }
 
       .wedding-time {
-        font-size: 16px;
-      }
-
-      .venue-details {
-        gap: 8px;
-      }
-
-      .venue-name {
-        font-size: 18px;
-      }
-
-      .venue-address {
         font-size: 14px;
       }
     }

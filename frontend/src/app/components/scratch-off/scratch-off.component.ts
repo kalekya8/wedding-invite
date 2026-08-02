@@ -9,10 +9,6 @@ import { ConfettiService } from '../../services/confetti.service';
   imports: [CommonModule],
   template: `
     <div class="scratch-wrapper">
-      <div class="location-info">
-        <p class="wedding-venue">Harpers by Bailey Farms,<br>Iowa</p>
-      </div>
-
       <div class="venue-address-info">
         <p class="venue-name">Harpers by Bailey Farms</p>
         <p class="venue-address">3014 Scott St, New Virginia, IA 50210</p>

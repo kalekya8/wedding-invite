@@ -587,8 +587,9 @@ export class GuestListComponent implements OnInit {
   }
 
   updateStats() {
-    this.totalGuests = this.guests.length;
-    this.attendingCount = this.guests.length;
+    const uniqueGuests = new Set(this.guests.map(g => g.guestName));
+    this.totalGuests = uniqueGuests.size;
+    this.attendingCount = uniqueGuests.size;
     this.declinedCount = 0;
   }
 

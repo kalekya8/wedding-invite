@@ -255,7 +255,7 @@ export class ScratchOffComponent implements OnInit, OnDestroy {
     this.ctx.fillStyle = '#9CA88C';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const text = 'Scratch to reveal';
+    const text = 'Scratch';
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
     this.ctx.font = 'italic 32px Georgia, serif';
     this.ctx.textAlign = 'center';

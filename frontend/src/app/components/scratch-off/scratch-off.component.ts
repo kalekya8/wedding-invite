@@ -68,8 +68,8 @@ import { ConfettiService } from '../../services/confetti.service';
 
     .scratch-container {
       position: relative;
-      width: 900px;
-      height: 280px;
+      width: 1200px;
+      height: 400px;
       max-width: calc(100% - 40px);
       margin: 0 auto;
       margin-top: 20px;
@@ -88,7 +88,7 @@ import { ConfettiService } from '../../services/confetti.service';
         margin-right: 30px;
         margin-top: 20px;
         margin-bottom: 40px;
-        height: 200px;
+        height: 350px;
         width: 100%;
       }
     }
@@ -139,7 +139,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .wedding-date {
-      font-size: 32px;
+      font-size: 48px;
       font-family: 'Georgia', serif;
       margin: 0;
       color: #D4AF37;
@@ -147,7 +147,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .wedding-time {
-      font-size: 16px;
+      font-size: 22px;
       margin: 0;
       color: #D4AF37;
       font-weight: 300;
@@ -160,7 +160,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .venue-name {
-      font-size: 18px;
+      font-size: 24px;
       font-weight: 500;
       color: #7a9d5d;
       margin: 0;
@@ -168,7 +168,7 @@ import { ConfettiService } from '../../services/confetti.service';
     }
 
     .venue-address {
-      font-size: 14px;
+      font-size: 16px;
       color: #9AA68A;
       margin: 5px 0 0 0;
       font-family: 'Georgia', serif;
@@ -181,11 +181,11 @@ import { ConfettiService } from '../../services/confetti.service';
       }
 
       .venue-name {
-        font-size: 16px;
+        font-size: 22px;
       }
 
       .venue-address {
-        font-size: 12px;
+        font-size: 14px;
       }
     }
 

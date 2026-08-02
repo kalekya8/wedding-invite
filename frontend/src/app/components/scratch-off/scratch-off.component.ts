@@ -71,7 +71,7 @@ import { ConfettiService } from '../../services/confetti.service';
 
     .scratch-container {
       position: relative;
-      width: 700px;
+      width: 750px;
       height: 360px;
       max-width: calc(100% - 40px);
       margin: 0 auto;

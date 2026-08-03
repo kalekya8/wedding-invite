@@ -25,8 +25,6 @@ public class RsvpService : IRsvpService
         foreach (var response in responses)
         {
             response.Id = Guid.NewGuid();
-            response.CreatedAt = DateTime.UtcNow;
-            response.UpdatedAt = DateTime.UtcNow;
         }
 
         _context.RsvpResponses.AddRange(responses);
